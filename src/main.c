@@ -19,7 +19,7 @@ int main()
         }
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        window = glfwCreateWindow(1000, 800, "Canvas", NULL, NULL);
+        window = glfwCreateWindow(1000, 800, "Minestorm (g.martineaux, m.akkari)", NULL, NULL);
         if (window == NULL)
         {
             const char* error; glfwGetError(&error);
@@ -38,7 +38,7 @@ int main()
     appInit(&app);
 
     // Main loop
-    while (glfwWindowShouldClose(window) == GLFW_FALSE)
+    while (glfwWindowShouldClose(window) == GLFW_FALSE && app.shutdown == false)
     {
         // Begin
         glfwPollEvents();

@@ -5,3 +5,4 @@ app.exe
 app
 Makefile
 *.o
+app.exe.stackdump

@@ -98,5 +98,4 @@ void appUpdate(App* app)
 void appShutdown(App* app)
 {
     (void)app; // TOREMOVE: Silence unused parameter ‘app’ warning
-    //test 1 2 1 2
 }

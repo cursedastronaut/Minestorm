@@ -1,0 +1,7 @@
+.vscode
+.vscode/settings.json
+.vscode/
+app.exe
+app
+Makefile
+*.o

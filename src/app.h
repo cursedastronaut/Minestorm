@@ -10,8 +10,10 @@ typedef struct float2
 typedef struct HUD
 {
     //TO EDIT | Player 1 & 2
-    int score;  //Player score
-    int lives;  //Lives left
+    int p1_score;  //Player score
+    int p1_lives;  //Lives left
+    int p2_score;
+    int p2_lives;
 } HUD;
 
 typedef struct App
@@ -19,6 +21,7 @@ typedef struct App
     struct HUD;
     int scene;
     bool shutdown;
+    bool twoPlayers;
 } App;
 
 void appInit(App* app);

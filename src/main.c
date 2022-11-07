@@ -43,7 +43,6 @@ int main()
         // Begin
         glfwPollEvents();
         cvNewFrame();
-
         appUpdate(&app);
         
         // End

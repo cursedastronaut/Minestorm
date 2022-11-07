@@ -23,10 +23,18 @@ void processingMainMenu(App* app)
     //Lance une partie solo
     if (igIsKeyDown(ImGuiKey_F))
     {
+        app->twoPlayers = false;
         app->scene = 1;
+        printf("app->scene = 1\n");
     }
 
     //Lance une partie deux joueurs
+    if (igIsKeyDown(ImGuiKey_F))
+    {
+        app->twoPlayers = true;
+        app->scene = 1;
+        printf("app->scene = 1\n");
+    }
 
     //Quitte le jeu
     if (igIsKeyDown(ImGuiKey_Escape))

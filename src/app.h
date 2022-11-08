@@ -25,6 +25,8 @@ typedef struct App
     int scene;
     bool shutdown;
     bool twoPlayers;
+
+    float deltaTime;
 } App;
 
 void appInit(App* app);

@@ -11,6 +11,7 @@
 void appInit(App* app)
 {
     app->paused = false;
+    app->deltaTime = 0.0f;
 }
 
 //Handles the choosing of the chosen scene.
@@ -42,8 +43,10 @@ void sceneDisplay(App* app)
 
 void appUpdate(App* app)
 {
-    sceneDisplay(app);
     ImGuiIO* io = igGetIO();
+    sceneDisplay(app);
+    app->deltaTime += io->DeltaTime;
+
     int width = io->DisplaySize.x;
     int height = io->DisplaySize.y;
 

@@ -11,7 +11,7 @@ pStruct player;
 //     return r;
 // }
 
-void playerScript()
+void playerScript(App* app)
 {
     float2 points[6] = {
         { 3.0f, -2.0f },
@@ -45,30 +45,51 @@ void playerScript()
 
 
 
+    if (app->deltaTime >= 1.0f/60.0f)
+    {
+        
+        //Controls
+        if (igIsKeyDown(ImGuiKey_D) || igIsKeyDown(ImGuiKey_LeftArrow))
+        {
+            player.angle -= (2.0f * PI / 360.0f) * 2;
+        }
+        if (igIsKeyDown(ImGuiKey_G) || igIsKeyDown(ImGuiKey_RightArrow))
+        {
+            player.angle += (2.0f * PI / 360.0f) * 2;
+        }
+        if (igIsKeyDown(ImGuiKey_R) || igIsKeyDown(ImGuiKey_UpArrow))
+        {
+            if (player.momentumX > 0.05)
+                player.momentumX = 0.05;
+            if (player.momentumX < -0.05)
+                player.momentumX = -0.05;
+            
+            if (player.momentumY > 0.05)
+                player.momentumY = 0.05;
+            if (player.momentumY < -0.05)
+                player.momentumY = -0.05;
+            
+            player.momentumX += (sin(-player.angle) * 0.001);
+            player.momentumY += (cos(-player.angle) * 0.001);
+        }
 
-    //Controls
-    if (igIsKeyDown(ImGuiKey_D))
-    {
-        player.angle -= (2.0f * PI / 360.0f) * 4;
-    }
-    if (igIsKeyDown(ImGuiKey_G))
-    {
-        player.angle += (2.0f * PI / 360.0f) * 4;
-    }
-    if (igIsKeyDown(ImGuiKey_R))
-    {
-        player.x += (sin(-player.angle) * 1);
-        player.y += (cos(-player.angle) * 1);
-    }
+        //Angle
+        if (player.angle > 2.0f * PI)
+        {
+            player.angle = 0.0f;
+        }
+        else if (player.angle < 0.0f)
+        {
+            player.angle = 2.0f * PI;
+        }
 
-    //Angle
-    if (player.angle > 2.0f * PI)
-    {
-        player.angle = 0.0f;
+        //Movement
+        player.x += player.momentumX;
+        player.y += player.momentumY;
+        app->deltaTime = 0;
     }
-    else if (player.angle < 0.0f)
-    {
-        player.angle = 2.0f * PI;
-    }
+    
     cvAddFormattedText(5,-5,CV_COL32_WHITE, "Angle: %f", player.angle);
+    cvAddFormattedText(5,-6,CV_COL32_WHITE, "MomX: %f", player.momentumX);
+    cvAddFormattedText(5,-7,CV_COL32_WHITE, "MomY: %f", player.momentumY);
 }

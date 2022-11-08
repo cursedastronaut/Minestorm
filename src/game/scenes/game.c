@@ -37,7 +37,7 @@ void displayGame(App* app)
 
 void processingGame(App* app)
 {
-    playerScript();
+    playerScript(app);
     pauseGame(app);
     if (igIsKeyDown(ImGuiKey_Space))
     {

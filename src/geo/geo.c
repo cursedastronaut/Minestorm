@@ -1,13 +1,13 @@
 #include "../app.h"
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
-float2 rotatePoint(float2 p, float angle)
+float2 rotatePoint(float2 p, float2 c, float angle)
 {
     float2 r;
-    r.x = p.x * cosf(angle) - p.y * sinf(angle);
-    r.y = p.y * cosf(angle) + p.x * sinf(angle);
+    r.x = (p.x-c.x) * cosf(angle) - (p.y-c.y) * sinf(angle) +c.x;
+    r.y = (p.y-c.y) * cosf(angle) + (p.x-c.x) * sinf(angle) + c.y;
     return r;
 }
-
+/*
 float2 midPt(float x1, float y1, float x2, float y2)
 {
     float2 midPoint;
@@ -52,4 +52,4 @@ void drawTriangle(float2 p1, float2 p2, float2 p3)
     }
 
     cvPathStroke(CV_COL32_WHITE, 1);
-}
+}*/

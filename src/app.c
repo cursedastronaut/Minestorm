@@ -3,13 +3,14 @@
 #include <canvas.h>
 #include <math.h>
 
-#include "geo/geo.c"
-#include "app.h"
-#include "game/scenes/scenes.h"
+#include "geo/geo.c"            //Moteur de jeu
+#include "app.h"                //Db
+#include "game/scenes/scenes.h" //Liste des scènes
 
 
 void appInit(App* app)
 {
+    app->paused = false;
 }
 
 //Handles the choosing of the chosen scene.

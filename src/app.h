@@ -19,6 +19,9 @@ typedef struct HUD
 typedef struct App
 {
     struct HUD HUD;
+
+    bool paused;
+
     int scene;
     bool shutdown;
     bool twoPlayers;

@@ -1,4 +1,5 @@
 #include "../hud/hud.h"
+#include "../player/player.c"
 
 void pauseGame()
 {
@@ -13,6 +14,7 @@ void displayGame(App* app)
 
 void processingGame(App* app)
 {
+    playerScript();
     if (igIsKeyDown(ImGuiKey_Space))
     {
         pauseGame();

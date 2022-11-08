@@ -10,6 +10,7 @@
 
 void appInit(App* app)
 {
+    
 }
 
 //Handles the choosing of the chosen scene.

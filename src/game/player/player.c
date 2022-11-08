@@ -1,4 +1,6 @@
 #include "player.h"
+#include <stdlib.h>
+#include <time.h>
 #define PI 3.14159276
 
 pStruct player;
@@ -31,6 +33,29 @@ void drawPlayer(App* app)
     }
     cvPathStroke(CV_COL32_WHITE, 1);
 }
+
+void playerTeleport(App* app)
+{
+    ImGuiIO* io = igGetIO();
+    srand( time(NULL) );
+    player.x = rand();
+    player.x /= RAND_MAX / 50;
+    srand( time(0)-7 );
+    player.y = -rand();
+    player.y /= RAND_MAX / 50;
+
+    if (player.x < 1)
+    {
+        player.x = 1;
+    }
+    if (player.y > -1)
+        player.y=-1;
+    if (player.y < -io->DisplaySize.y/50 )
+        player.y= -io->DisplaySize.y/50 + 1;
+    if (player.x > io->DisplaySize.x/50)
+        player.x = io->DisplaySize.x/50-1;
+
+}
 //Checks for input and prepare for movement
 void playerControls(App* app)
 {
@@ -57,6 +82,11 @@ void playerControls(App* app)
             
             player.momentumX += (sin(-player.angle) * 0.01);
             player.momentumY += (cos(-player.angle) * 0.01);
+        }
+
+        if (igIsKeyDown(ImGuiKey_K))
+        {
+            playerTeleport(app);
         }
 
         //Angle

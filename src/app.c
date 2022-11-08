@@ -12,6 +12,7 @@ void appInit(App* app)
 {
     app->paused = false;
     app->deltaTime = 0.0f;
+    playerInit(app);
 }
 
 //Handles the choosing of the chosen scene.
@@ -52,8 +53,8 @@ void appUpdate(App* app)
 
     cvSetCoordinateSystemFromScreenSpace(
             0, 0, // origin
-            50.f, 0.f,                 // right
-            0.f, -50.f                 // top
+            50.0f, 0.f,                 // right
+            0.f, -50.0f                 // top
     );
 }
 

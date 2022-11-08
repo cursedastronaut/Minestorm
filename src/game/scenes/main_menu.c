@@ -1,6 +1,6 @@
 #pragma once
-//#include <canvas.h>
 #include "../../geo/text.c"
+#include "../../app.h"
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 
 

@@ -28,6 +28,12 @@ void sceneDisplay(App* app)
         displayGame(app);
         processingGame(app);
         break;
+    
+    //Game Over
+    case 3:
+        displayGameOver(app);
+        break;
+
     default:
         break;
     }

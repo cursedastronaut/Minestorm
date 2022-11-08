@@ -7,8 +7,8 @@
 //Handles the Main Menu Display
 void displayMainMenu(App* app)
 {
-    cvAddTextBorder(-1.5,7.9,CV_COL32_WHITE, "MINESTORM");
-    cvAddTextBorder(-4,-7, CV_COL32_WHITE, "© GCE 1982 - ISART DIGITAL 2022");
+    cvAddTextBorder(8, 0,CV_COL32_WHITE, "MINESTORM");
+    cvAddTextBorder(6,-15, CV_COL32_WHITE, "© GCE 1982 - ISART DIGITAL 2022");
 
     cvAddText(-3, 3, CV_COL32_WHITE, "F      -    New Game (1 player)");
     cvAddText(-3, 2, CV_COL32_WHITE, "K      -    New Game (2 players)");

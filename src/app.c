@@ -26,6 +26,7 @@ void sceneDisplay(App* app)
     //Scene 1 = Game
     case 1:
         displayGame(app);
+        processingGame(app);
         break;
     default:
         break;
@@ -40,7 +41,7 @@ void appUpdate(App* app)
     int height = io->DisplaySize.y;
 
     cvSetCoordinateSystemFromScreenSpace(
-            width / 2.f, height / 2.f, // origin
+            0, 0, // origin
             50.f, 0.f,                 // right
             0.f, -50.f                 // top
     );

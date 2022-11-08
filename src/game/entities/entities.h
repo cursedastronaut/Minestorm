@@ -1,0 +1,6 @@
+#include "player_shot.c"
+#include "fireball_mine.c"
+#include "floating_mine.c"
+#include "magnetic_fireball_mine.c"
+#include "magnetic_mine"
+#include "player_shot"

@@ -1,0 +1,4 @@
+void entityShot(App* app)
+{
+    
+}

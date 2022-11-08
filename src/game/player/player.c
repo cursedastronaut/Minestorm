@@ -88,7 +88,15 @@ void playerScript(App* app)
         player.y += player.momentumY;
         app->deltaTime = 0;
     }
-    
+
+
+    //Out of borders
+    ImGuiIO* io = igGetIO();
+    if (player.x >= io->DisplaySize.x / 50)
+        player.x = 0;
+    if (player.y >= io->DisplaySize.y / 50)
+        player.x = 0;
+
     cvAddFormattedText(5,-5,CV_COL32_WHITE, "Angle: %f", player.angle);
     cvAddFormattedText(5,-6,CV_COL32_WHITE, "MomX: %f", player.momentumX);
     cvAddFormattedText(5,-7,CV_COL32_WHITE, "MomY: %f", player.momentumY);

@@ -2,7 +2,8 @@
 
 void pauseGame()
 {
-    
+    ImGuiIO* io = igGetIO();
+    cvAddText(io->DisplaySize.x/50 / 2 - 0.5, -(io->DisplaySize.y / 50 / 2) + 0.5, CV_COL32_WHITE, "PAUSE");
 }
 
 void displayGame(App* app)

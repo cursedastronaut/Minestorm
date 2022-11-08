@@ -7,12 +7,13 @@
 //Handles the Main Menu Display
 void displayMainMenu(App* app)
 {
-    cvAddTextBorder(8, 0,CV_COL32_WHITE, "MINESTORM");
-    cvAddTextBorder(6,-15, CV_COL32_WHITE, "© GCE 1982 - ISART DIGITAL 2022");
+    ImGuiIO* io = igGetIO();
+    cvAddTextBorder((io->DisplaySize.x/50) / 2 - 1.5, io->DisplaySize.y/50,CV_COL32_WHITE, "MINESTORM");
+    cvAddTextBorder((io->DisplaySize.x/50) / 2 - 3.4, 1, CV_COL32_WHITE, "© GCE 1982 - ISART DIGITAL 2022");
 
-    cvAddText(-3, 3, CV_COL32_WHITE, "F      -    New Game (1 player)");
-    cvAddText(-3, 2, CV_COL32_WHITE, "K      -    New Game (2 players)");
-    cvAddText(-3, 1, CV_COL32_WHITE, "ESC -    Quit");
+    cvAddText((io->DisplaySize.x/50) / 2 - 4, 10, CV_COL32_WHITE, "F      -    New Game (1 player)");
+    cvAddText((io->DisplaySize.x/50) / 2 - 4, 9, CV_COL32_WHITE, "K      -    New Game (2 players)");
+    cvAddText((io->DisplaySize.x/50) / 2 - 4, 8, CV_COL32_WHITE, "ESC -    Quit");
 }
 
 

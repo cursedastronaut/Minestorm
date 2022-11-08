@@ -41,7 +41,7 @@ void appUpdate(App* app)
     int height = io->DisplaySize.y;
 
     cvSetCoordinateSystemFromScreenSpace(
-            0, height, // origin
+            0, 0, // origin
             50.f, 0.f,                 // right
             0.f, -50.f                 // top
     );

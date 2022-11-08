@@ -30,7 +30,7 @@ void processingMainMenu(App* app)
     }
 
     //Lance une partie deux joueurs
-    if (igIsKeyDown(ImGuiKey_F))
+    if (igIsKeyDown(ImGuiKey_K))
     {
         app->twoPlayers = true;
         app->scene = 1;

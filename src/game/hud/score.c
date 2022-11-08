@@ -4,7 +4,7 @@
 void drawHUDScore(App* app)
 {
     char output[15]; //Max score can only contain 8 numbers. (99999999)
-    sprintf(output, "Score: %d", app->p1_score);
+    sprintf(output, "Score: %d", app->HUD.p1_score);
     //app->p1_score++;
     ImGuiIO* io = igGetIO();
     cvAddText(

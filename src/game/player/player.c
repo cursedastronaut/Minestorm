@@ -62,26 +62,33 @@ void playerControls(App* app)
     //Controls
         if (igIsKeyDown(ImGuiKey_D) || igIsKeyDown(ImGuiKey_LeftArrow))
         {
-            player.angle += (2.0f * PI / 360.0f) * 5;
+            player.angle += (2.0f * PI / 360.0f) * app->deltaTime * 150;
         }
         if (igIsKeyDown(ImGuiKey_G) || igIsKeyDown(ImGuiKey_RightArrow))
         {
-            player.angle -= (2.0f * PI / 360.0f) * 5;
+            player.angle -= (2.0f * PI / 360.0f) * app->deltaTime * 150;
         }
         if (igIsKeyDown(ImGuiKey_R) || igIsKeyDown(ImGuiKey_UpArrow))
         {
-            if (player.momentumX > 0.2f)
-                player.momentumX = 0.2f;
-            if (player.momentumX < -0.2f)
-                player.momentumX = -0.2f;
+            // float velocity = sqrt(pow(player.momentumX, 2.0f) + pow(player.momentumY, 2.0f));
+            // float direction = arccos(player.momentumX);
+            // if (velocity > 0.2f)
+            // {
+            //     player.momentumX *= -cosf(player.angle);
+            //     player.momentumY *= -sinf(player.angle);
+            // }
+            if (player.momentumX > 0.18f)
+                player.momentumX = 0.18f;
+            if (player.momentumX < -0.18f)
+                player.momentumX = -0.18f;
             
-            if (player.momentumY > 0.2f)
-                player.momentumY = 0.2f;
-            if (player.momentumY < -0.2f)
-                player.momentumY = -0.2f;
+            if (player.momentumY > 0.18f)
+                player.momentumY = 0.18f;
+            if (player.momentumY < -0.18f)
+                player.momentumY = -0.18f;
             
-            player.momentumX += (sin(-player.angle) * 0.01);
-            player.momentumY += (cos(-player.angle) * 0.01);
+            player.momentumX += (sin(-player.angle) * 0.005);
+            player.momentumY += (cos(-player.angle) * 0.005);
         }
 
         if (igIsKeyDown(ImGuiKey_K))
@@ -103,15 +110,15 @@ void playerControls(App* app)
 void playerMovement(App* app)
 {
     //Movement
-    player.x += player.momentumX;
-    player.y += player.momentumY;
+    player.x += player.momentumX * app->deltaTime * 30;
+    player.y += player.momentumY * app->deltaTime * 30;
 }
 //Friction processing
 void playerFrictions(App* app)
 {
     //Friction
-    player.momentumX *= 0.97f;
-    player.momentumY *= 0.97f;
+    player.momentumX *= 0.99f;
+    player.momentumY *= 0.99f;
 }
 //Checks if player is Out Of Bounds and moves him to the other side if yes
 void playerOOB(App* app)
@@ -132,9 +139,11 @@ void playerOOB(App* app)
 void playerDebug(App* app)
 {
     //Debug
+    igText("DeltaTime: %f", app->deltaTime);
     igText("Player 1");
     igText("X: %f", player.x);
     igText("Y: %f", player.y);
+    igText("Speed: %f", sqrt(pow(player.momentumX, 2.0f) + pow(player.momentumY, 2.0f)));
     igText("Momentum X: %f", player.momentumX);
     igText("Momentum Y: %f", player.momentumY);
     igText("Angle: %f", player.angle);
@@ -143,14 +152,9 @@ void playerDebug(App* app)
 void playerScript(App* app)
 {
     drawPlayer(app);
-    if (app->deltaTime >= 1.0f/60.0f)
-    {
-        playerControls(app);
-        playerFrictions(app);
-        playerMovement(app);
-        app->deltaTime = 0;
-    }
-
+    playerControls(app);
+    playerFrictions(app);
+    playerMovement(app);
     playerOOB(app);
     playerDebug(app);
 }

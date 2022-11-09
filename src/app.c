@@ -11,7 +11,6 @@
 void appInit(App* app)
 {
     app->paused = false;
-    app->deltaTime = 0.0f;
     playerInit(app);
 }
 
@@ -47,6 +46,10 @@ void appUpdate(App* app)
     ImGuiIO* io = igGetIO();
     sceneDisplay(app);
     app->deltaTime += io->DeltaTime;
+    if (app->deltaTime > 1.0f / 60)
+    {
+        app->deltaTime = 0;
+    }
 
     int width = io->DisplaySize.x;
     int height = io->DisplaySize.y;

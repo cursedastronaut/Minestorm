@@ -148,6 +148,7 @@ void playerScript(App* app)
         playerControls(app);
         playerFrictions(app);
         playerMovement(app);
+        app->deltaTime = 0;
     }
 
     playerOOB(app);

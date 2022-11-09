@@ -40,7 +40,6 @@ void processingGame(App* app)
 {
     playerScript(app);
     entityMineFloating(app);
-    app->deltaTime = 0;
     pauseGame(app);
     if (igIsKeyDown(ImGuiKey_Space))
     {

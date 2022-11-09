@@ -29,13 +29,9 @@ void drawMineFloating()
 void entityMineFloating(App* app)
 {
     drawMineFloating();
-    if (app->deltaTime >= 1.0f/60.0f)
-    {
         //Movement
         fmine.momentumX = 0.04;
         fmine.momentumY = -0.04;
         fmine.x += fmine.momentumX;
         fmine.y += fmine.momentumY;
-    }
-
 }

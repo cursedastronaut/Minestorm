@@ -105,7 +105,6 @@ void playerMovement(App* app)
     //Movement
     player.x += player.momentumX;
     player.y += player.momentumY;
-    app->deltaTime = 0;
 }
 //Friction processing
 void playerFrictions(App* app)

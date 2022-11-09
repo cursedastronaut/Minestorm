@@ -1,5 +1,6 @@
 #include "../hud/hud.h"
 #include "../player/player.c"
+#include "../entities/floating_mine.c"
 
 void pauseGame(App* app)
 {
@@ -38,6 +39,8 @@ void displayGame(App* app)
 void processingGame(App* app)
 {
     playerScript(app);
+    entityMineFloating(app);
+    app->deltaTime = 0;
     pauseGame(app);
     if (igIsKeyDown(ImGuiKey_Space))
     {
@@ -48,5 +51,4 @@ void processingGame(App* app)
             app->scene = 3;
         }
     }
-    
 }

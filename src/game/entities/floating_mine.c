@@ -4,14 +4,13 @@ entMF fmine;
 void drawMineFloating()
 {
     float2 points[6] = {
-        { 0.0f, 0.3f },
-        { 0.5f, -0.3f },
-        { 0.35f, -0.3f },
-        { 0.0f, -0.5f },
-        { -0.35f, -0.3f },
-        { -0.5f, -0.3f },
+        { 0.1f * cosf(PI / 2), 0.1f * sinf(PI / 2)},
+        { 0.5f * cosf(PI / 6), 0.5f * sinf(PI / 6)},
+        { 0.1f * cosf(-PI / 6), 0.1f * sinf(-PI / 6)},
+        { 0.5f * cosf(-PI / 2), 0.5f * sinf(-PI / 2)},
+        { 0.1f * cosf(-5 * PI / 6), 0.1f * sinf(-5 * PI / 6)},
+        { 0.5f * cosf((5 * PI) / 6), 0.5f * sinf((5 * PI) / 6)}
     };
-
     for (int i = 0; i < 6; ++i)
     {
         float2 newPoint = points[i];
@@ -30,8 +29,8 @@ void entityMineFloating(App* app)
 {
     drawMineFloating();
         //Movement
-        fmine.momentumX = 0.04;
-        fmine.momentumY = -0.04;
+        fmine.momentumX = 0.01;
+        fmine.momentumY = -0.01;
         fmine.x += fmine.momentumX;
         fmine.y += fmine.momentumY;
 }

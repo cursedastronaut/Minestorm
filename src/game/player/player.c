@@ -64,16 +64,16 @@ void playerControls(App* app)
     //Controls
         if (igIsKeyDown(ImGuiKey_D) || igIsKeyDown(ImGuiKey_LeftArrow))
         {
-            player.angle += (2.0f * PI / 360.0f);
+            player.angle += (480.0f * PI / 360.0f) * app->deltaTime;
         }
         if (igIsKeyDown(ImGuiKey_G) || igIsKeyDown(ImGuiKey_RightArrow))
         {
-            player.angle -= (2.0f * PI / 360.0f);
+            player.angle -= (480.0f * PI / 360.0f) * app->deltaTime;
         }
         if (igIsKeyDown(ImGuiKey_R) || igIsKeyDown(ImGuiKey_UpArrow))
         {   
-            player.momentumX += (sin(-player.angle) * 0.0005f);
-            player.momentumY += (cos(-player.angle) * 0.0005f);
+            player.momentumX += (sin(-player.angle) * 0.5f);
+            player.momentumY += (cos(-player.angle) * 0.5f);
         }
 
         if (igIsKeyDown(ImGuiKey_K))
@@ -95,15 +95,15 @@ void playerControls(App* app)
 void playerMovement(App* app)
 {
     //Movement
-    player.x += player.momentumX;
-    player.y += player.momentumY;
+    player.x += player.momentumX * app->deltaTime;
+    player.y += player.momentumY * app->deltaTime;
 }
 //Friction processing
 void playerFrictions(App* app)
 {
     //Friction
-    player.momentumX *= 0.99f;
-    player.momentumY *= 0.99f;
+    player.momentumX *= 0.999f;// * app->deltaTime;
+    player.momentumY *= 0.999f;// * app->deltaTime;
 }
 //Checks if player is Out Of Bounds and moves him to the other side if yes
 void playerOOB(App* app)

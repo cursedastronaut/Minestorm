@@ -39,11 +39,11 @@ void displayGame(App* app)
 void processingGame(App* app)
 {
     playerScript(app);
-    entityMineFloating(app);
+    //entityMineFloating(app);
+    entityType();
     pauseGame(app);
     if (igIsKeyDown(ImGuiKey_Space))
     {
-
         //DEBUG
         if (igIsKeyDown(ImGuiKey_A))
         {

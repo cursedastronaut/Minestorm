@@ -47,8 +47,8 @@ void appUpdate(App* app)
     ImGuiIO* io = igGetIO();
     sceneDisplay(app);
 
-    int width = io->DisplaySize.x;
-    int height = io->DisplaySize.y;
+    // app -> width = io->DisplaySize.x;
+    // app -> height = io->DisplaySize.y;
 
     cvSetCoordinateSystemFromScreenSpace(
             0, 0, // origin

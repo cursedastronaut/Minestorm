@@ -27,6 +27,9 @@ typedef struct App
     bool twoPlayers;
 
     float deltaTime;
+
+    int width;
+    int height;
 } App;
 
 void appInit(App* app);

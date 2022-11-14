@@ -17,6 +17,7 @@ void appInit(App* app)
 //Handles the choosing of the chosen scene.
 void sceneDisplay(App* app)
 {
+    app->deltaTime = igGetIO()->DeltaTime;
     switch (app->scene)
     {
     //Scene 0 = Main Menu

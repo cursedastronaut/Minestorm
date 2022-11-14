@@ -28,9 +28,13 @@ void drawMineFloating()
 void entityMineFloating(App* app)
 {
     drawMineFloating();
-        //Movement
-        fmine.momentumX = 0.01;
-        fmine.momentumY = -0.01;
-        fmine.x += fmine.momentumX;
-        fmine.y += fmine.momentumY;
+    //Movement
+    fmine.momentumX = 0.01;
+    fmine.momentumY = -0.01;
+    fmine.x += fmine.momentumX;
+    fmine.y += fmine.momentumY;
+    if (igIsKeyDown(ImGuiKey_V))
+    {
+        
+    }
 }

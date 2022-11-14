@@ -59,36 +59,21 @@ void playerTeleport(App* app)
 //Checks for input and prepare for movement
 void playerControls(App* app)
 {
+    float velocity = sqrt(pow(player.momentumX, 2.0f) + pow(player.momentumY, 2.0f));
+    float direction = atan2f(player.momentumY, player.momentumX);
     //Controls
         if (igIsKeyDown(ImGuiKey_D) || igIsKeyDown(ImGuiKey_LeftArrow))
         {
-            player.angle += (2.0f * PI / 360.0f) * app->deltaTime * 150;
+            player.angle += (2.0f * PI / 360.0f);
         }
         if (igIsKeyDown(ImGuiKey_G) || igIsKeyDown(ImGuiKey_RightArrow))
         {
-            player.angle -= (2.0f * PI / 360.0f) * app->deltaTime * 150;
+            player.angle -= (2.0f * PI / 360.0f);
         }
         if (igIsKeyDown(ImGuiKey_R) || igIsKeyDown(ImGuiKey_UpArrow))
-        {
-            // float velocity = sqrt(pow(player.momentumX, 2.0f) + pow(player.momentumY, 2.0f));
-            // float direction = arccos(player.momentumX);
-            // if (velocity > 0.2f)
-            // {
-            //     player.momentumX *= -cosf(player.angle);
-            //     player.momentumY *= -sinf(player.angle);
-            // }
-            if (player.momentumX > 0.18f)
-                player.momentumX = 0.18f;
-            if (player.momentumX < -0.18f)
-                player.momentumX = -0.18f;
-            
-            if (player.momentumY > 0.18f)
-                player.momentumY = 0.18f;
-            if (player.momentumY < -0.18f)
-                player.momentumY = -0.18f;
-            
-            player.momentumX += (sin(-player.angle) * 0.005);
-            player.momentumY += (cos(-player.angle) * 0.005);
+        {   
+            player.momentumX += (sin(-player.angle) * 0.0005f);
+            player.momentumY += (cos(-player.angle) * 0.0005f);
         }
 
         if (igIsKeyDown(ImGuiKey_K))
@@ -110,8 +95,8 @@ void playerControls(App* app)
 void playerMovement(App* app)
 {
     //Movement
-    player.x += player.momentumX * app->deltaTime * 30;
-    player.y += player.momentumY * app->deltaTime * 30;
+    player.x += player.momentumX;
+    player.y += player.momentumY;
 }
 //Friction processing
 void playerFrictions(App* app)

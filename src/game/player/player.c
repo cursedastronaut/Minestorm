@@ -1,14 +1,18 @@
 #include "player.h"
+#include "../entities/bullet.h"
 #include <stdlib.h>
 #include <time.h>
 #define PI 3.14159276
+
+int bulletCount = 0;
+static pBullet bullets[25];
 
 pStruct player;
 //Initializes the player's position
 void playerInit(App* app)
 {
     player.x = 10;
-    player.y = -8;
+    player.y = -7;
 }
 //Draws the player to the screen
 void drawPlayer(App* app)
@@ -33,6 +37,15 @@ void drawPlayer(App* app)
     }
     cvPathStroke(CV_COL32_WHITE, 1);
 }
+
+// void playerShoot(float x, float y)
+// {
+//     for (int i = 0; bullet[i].isAvailable != 0 || bullet[i] - 1 >= bulletCount; i++)
+//     struct pBullet bullet[bulletCount];
+//     bullet[bulletCount].x = player.x;
+//     bullet[bulletCount].y = player.y;
+//     bullet[bulletCount].angle = player.angle;
+// }
 
 void playerTeleport(App* app)
 {
@@ -72,14 +85,18 @@ void playerControls(App* app)
         }
         if (igIsKeyDown(ImGuiKey_R) || igIsKeyDown(ImGuiKey_UpArrow))
         {   
-            player.momentumX += (sin(-player.angle) * 0.5f);
-            player.momentumY += (cos(-player.angle) * 0.5f);
+            player.momentumX += (sin(-player.angle) * 0.25f);
+            player.momentumY += (cos(-player.angle) * 0.25f);
         }
 
         if (igIsKeyDown(ImGuiKey_K))
         {
             playerTeleport(app);
         }
+        // if (igIsKeyDown(ImGuiKey_F))
+        // {
+        //     playerShoot(player.x, player.y);
+        // }
 
         //Angle
         if (player.angle > 2.0f * PI)
@@ -102,8 +119,8 @@ void playerMovement(App* app)
 void playerFrictions(App* app)
 {
     //Friction
-    player.momentumX *= 0.999f;// * app->deltaTime;
-    player.momentumY *= 0.999f;// * app->deltaTime;
+    player.momentumX *= 0.98f;// * app->deltaTime;
+    player.momentumY *= 0.98f;// * app->deltaTime;
 }
 //Checks if player is Out Of Bounds and moves him to the other side if yes
 void playerOOB(App* app)

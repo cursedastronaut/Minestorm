@@ -3,6 +3,8 @@
 .vscode/
 app.exe
 app
+Minestorm
+Minestorm.exe
 Makefile
 *.o
 app.exe.stackdump

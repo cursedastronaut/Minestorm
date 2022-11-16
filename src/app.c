@@ -2,7 +2,6 @@
 #include <cimgui.h>
 #include <canvas.h>
 #include <math.h>
-
 #include "geo/geo.c"            //Moteur de jeu
 #include "app.h"                //Db
 #include "game/scenes/scenes.h" //Liste des scènes
@@ -47,8 +46,8 @@ void appUpdate(App* app)
     ImGuiIO* io = igGetIO();
     sceneDisplay(app);
 
-    int width = io->DisplaySize.x;
-    int height = io->DisplaySize.y;
+    // app -> width = io->DisplaySize.x;
+    // app -> height = io->DisplaySize.y;
 
     cvSetCoordinateSystemFromScreenSpace(
             0, 0, // origin

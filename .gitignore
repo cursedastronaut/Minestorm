@@ -6,5 +6,6 @@ app
 Minestorm
 Minestorm.exe
 Makefile
+libs.old/
 *.o
 app.exe.stackdump

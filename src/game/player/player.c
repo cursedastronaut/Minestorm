@@ -22,6 +22,8 @@ void playerInit(App* app)
         gBullets[i].isActive = 0;
         gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
     }
+    gPlayers[0].score = 0;
+    gPlayers[1].score = 0;
 }
 //Draws the player to the screen
 void drawPlayer(App* app)
@@ -151,25 +153,25 @@ void playerControls(App* app)
             gPlayers[0].momentumY += (cos(-gPlayers[0].angle) * 0.25f);
         }
 
-        if (igIsKeyReleased(ImGuiKey_K))
+        if (igIsKeyReleased(ImGuiKey_T))
         {
             playerTeleport(app);
         }
-        if (igIsKeyReleased(ImGuiKey_N))
+        if (igIsKeyReleased(ImGuiKey_F) || igIsKeyReleased(ImGuiKey_E))
         {
             fireBullet(0);
         }
     
     //PLAYER 2
-        if (igIsKeyDown(ImGuiKey_Keypad4))
+        if (igIsKeyDown(ImGuiKey_Keypad4) || igIsKeyReleased(ImGuiKey_J))
         {
             gPlayers[1].angle += (480.0f * PI / 360.0f) * app->deltaTime;
         }
-        if (igIsKeyDown(ImGuiKey_Keypad6))
+        if (igIsKeyDown(ImGuiKey_Keypad6) ||igIsKeyReleased(ImGuiKey_L))
         {
             gPlayers[1].angle -= (480.0f * PI / 360.0f) * app->deltaTime;
         }
-        if (igIsKeyDown(ImGuiKey_Keypad8))
+        if (igIsKeyDown(ImGuiKey_Keypad8) || igIsKeyReleased(ImGuiKey_I))
         {   
             gPlayers[1].momentumX += (sin(-gPlayers[1].angle) * 0.25f);
             gPlayers[1].momentumY += (cos(-gPlayers[1].angle) * 0.25f);
@@ -179,7 +181,7 @@ void playerControls(App* app)
         {
             playerTeleport(app);
         }
-        if (igIsKeyReleased(ImGuiKey_B))
+        if (igIsKeyReleased(ImGuiKey_U) || igIsKeyReleased(ImGuiKey_O))
         {
             fireBullet(1);
         }

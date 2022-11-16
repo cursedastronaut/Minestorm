@@ -13,9 +13,10 @@ void appInit(App* app)
     app->paused = false;
     srand(time(NULL));
     playerInit(app);
-    app->textures.logo = cvLoadTexture("assets/minestorm-original.png");
-    app->textures.window[0] = cvLoadTexture("assets/window.png");
-    app->textures.window[1] = cvLoadTexture("assets/window1.png");
+    app->graphics.textures.logo = cvLoadTexture("assets/minestorm-original.png");
+    app->graphics.textures.window[0] = cvLoadTexture("assets/window.png");
+    app->graphics.textures.window[1] = cvLoadTexture("assets/window1.png");
+    app->graphics.textures.controls = cvLoadTexture("assets/controls.png");
     app->graphics.show_static = true;
 }
 

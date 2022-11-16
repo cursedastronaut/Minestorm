@@ -1,5 +1,5 @@
 #include "../hud/hud.h"
-#include "../player/player.c"
+//#include "../player/player.c"
 #include "../entities/floating_mine.c"
 
 void pauseGame(App* app)
@@ -17,10 +17,6 @@ void pauseGame(App* app)
         if (igIsKeyReleased(ImGuiKey_Escape))
         {
             app->paused = false;
-            app->HUD.p1_lives = 0;
-            app->HUD.p2_lives = 0;
-            app->HUD.p1_score = 0;
-            app->HUD.p2_score = 0;
             app->twoPlayers = false;
             app->scene = 0;
         }

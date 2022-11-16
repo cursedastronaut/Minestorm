@@ -2,17 +2,24 @@
 #include "../entities/bullet.h"
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 #define PI 3.14159276
-
-int bulletCount = 0;
-static pBullet bullets[25];
+#define maxBulletCount 1000000
+#define bulletLifetime 100
 
 pStruct player;
+struct pBullet bullet [maxBulletCount];
+
 //Initializes the player's position
 void playerInit(App* app)
 {
     player.x = 10;
     player.y = -7;
+    for (int i = 0; i <= maxBulletCount; i++)
+    {
+        bullet[i].isActive = 0;
+        bullet[i].timeBeforeDeath = bulletLifetime;
+    }
 }
 //Draws the player to the screen
 void drawPlayer(App* app)
@@ -33,19 +40,10 @@ void drawPlayer(App* app)
         newPoint.x = rotatePoint(temp, points[0], player.angle).x + player.x;
         newPoint.y = rotatePoint(temp, points[0], player.angle).y + player.y;
 
-        cvPathLineTo(newPoint.x, newPoint.y); 
+        cvPathLineTo(newPoint.x, newPoint.y);
     }
     cvPathStroke(CV_COL32_WHITE, 1);
 }
-
-// void playerShoot(float x, float y)
-// {
-//     for (int i = 0; bullet[i].isAvailable != 0 || bullet[i] - 1 >= bulletCount; i++)
-//     struct pBullet bullet[bulletCount];
-//     bullet[bulletCount].x = player.x;
-//     bullet[bulletCount].y = player.y;
-//     bullet[bulletCount].angle = player.angle;
-// }
 
 void playerTeleport(App* app)
 {
@@ -69,6 +67,63 @@ void playerTeleport(App* app)
         player.x = io->DisplaySize.x/50-1;
 
 }
+
+void fireBullet()
+{
+    float oldestBullet = bulletLifetime;
+    int oldestBulletIndex = 0;
+    for (int i = 0; i <= maxBulletCount; i++)
+    {
+        if (bullet[i].isActive == 0)
+        {
+            bullet[i].isActive = 1;
+            bullet[i].x = player.x;
+            bullet[i].y = player.y;
+            bullet[i].angle = player.angle;
+            return 0;
+        }
+        if (bullet[i].timeBeforeDeath < oldestBullet)
+        {
+            oldestBullet = bullet[i].timeBeforeDeath;
+            oldestBulletIndex = i;
+        }
+    }
+    bullet[oldestBulletIndex].x = player.x;
+    bullet[oldestBulletIndex].y = player.y;
+    bullet[oldestBulletIndex].timeBeforeDeath = 3;
+    bullet[oldestBulletIndex].angle = player.angle;
+    return 0;
+}
+void bulletUpdate(App* app)
+{
+    ImGuiIO* io = igGetIO();
+    for (int i = 0; i <= maxBulletCount; i++)
+    {
+        if (bullet[i].isActive == 1)
+        {
+            bullet[i].x += cosf(bullet[i].angle + (PI / 2)) * app -> deltaTime * 10;
+            bullet[i].y += sinf(bullet[i].angle + (PI / 2)) * app -> deltaTime * 10;
+            bullet[i].timeBeforeDeath -= app -> deltaTime;
+            cvAddPoint(bullet[i].x, bullet[i].y, CV_COL32_WHITE);
+        }
+        if (bullet[i].timeBeforeDeath <= 0)
+        {
+            bullet[i].timeBeforeDeath = bulletLifetime;
+            bullet[i].isActive = 0;
+        }
+
+        if (bullet[i].x > io->DisplaySize.x / 50 + 1)
+            bullet[i].x = -0.5;
+        if (bullet[i].x < -1)
+            bullet[i].x = io->DisplaySize.x / 50 + 0.5;
+
+        if (bullet[i].y < -io->DisplaySize.y / 50 - 2 )
+            bullet[i].y = 0.5;
+        if (bullet[i].y > 1)
+            bullet[i].y = -io->DisplaySize.y / 50 - 0.5;
+    }
+}
+
 //Checks for input and prepare for movement
 void playerControls(App* app)
 {
@@ -93,10 +148,10 @@ void playerControls(App* app)
         {
             playerTeleport(app);
         }
-        // if (igIsKeyDown(ImGuiKey_F))
-        // {
-        //     playerShoot(player.x, player.y);
-        // }
+        if (igIsKeyPressed(ImGuiKey_N, 1))
+        {
+            fireBullet();
+        }
 
         //Angle
         if (player.angle > 2.0f * PI)
@@ -157,6 +212,7 @@ void playerScript(App* app)
     playerControls(app);
     playerFrictions(app);
     playerMovement(app);
+    bulletUpdate(app);
     playerOOB(app);
     playerDebug(app);
 }

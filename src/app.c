@@ -16,12 +16,7 @@ void appInit(App* app)
     app->textures.logo = cvLoadTexture("assets/minestorm-original.png");
     app->textures.window[0] = cvLoadTexture("assets/window.png");
     app->textures.window[1] = cvLoadTexture("assets/window1.png");
-    for (int i = 0; i != 21; i++)
-    {
-        char buffer[20];
-        sprintf(buffer, "assets/static/%d.png", i);
-        app->textures.staticE[i] = cvLoadTexture(buffer);
-    }
+    app->graphics.show_static = true;
 }
 
 //Handles the choosing of the chosen scene.
@@ -50,6 +45,7 @@ void sceneDisplay(App* app)
     default:
         break;
     }
+    staticDisplay(app);
 }
 
 void appUpdate(App* app)

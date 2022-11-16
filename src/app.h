@@ -24,10 +24,16 @@ typedef struct textures
     int staticA;
 } textures;
 
+typedef struct graphics
+{
+    bool show_static;
+} graphics;
+
 typedef struct App
 {
     struct HUD HUD;
     struct textures textures;
+    struct graphics graphics;
 
     bool paused;
 

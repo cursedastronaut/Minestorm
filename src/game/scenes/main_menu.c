@@ -16,7 +16,6 @@ void displayMainMenu(App* app)
         cvAddTexture((io->DisplaySize.x/50) / 2, - (io->DisplaySize.y/50)/2, app->textures.window[0]);
     else
         cvAddTexture((io->DisplaySize.x/50) / 2, - (io->DisplaySize.y/50)/2, app->textures.window[1]);
-    staticDisplay(app);
     cvAddTexture((io->DisplaySize.x/50) / 2, -2, app->textures.logo);
 }
 
@@ -45,5 +44,10 @@ void processingMainMenu(App* app)
     if (igIsKeyDown(ImGuiKey_Escape))
     {
         app->shutdown = true;
+    }
+
+    if (igIsKeyReleased(ImGuiKey_V))
+    {
+        app->graphics.show_static = !app->graphics.show_static;
     }
 }

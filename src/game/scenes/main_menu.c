@@ -1,6 +1,7 @@
 #pragma once
 #include "../../geo/text.c"
 #include "../../app.h"
+#include "../../graphics/static.c"
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 
 
@@ -14,6 +15,7 @@ void displayMainMenu(App* app)
     cvAddText((io->DisplaySize.x/50) / 2 - 4, -7, CV_COL32_WHITE, "K   -  New Game (2 players)");
     cvAddText((io->DisplaySize.x/50) / 2 - 4, -8, CV_COL32_WHITE, "ESC -  Quit");
     cvAddTexture((io->DisplaySize.x/50) / 2, -2, app->textures.logo);
+    staticDisplay(app);
 }
 
 

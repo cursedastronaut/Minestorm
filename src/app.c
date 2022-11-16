@@ -14,6 +14,12 @@ void appInit(App* app)
     srand(time(NULL));
     playerInit(app);
     app->textures.logo = cvLoadTexture("assets/minestorm-original.png");
+    for (int i = 0; i != 21; i++)
+    {
+        char buffer[20];
+        sprintf(buffer, "assets/static/%d.png", i);
+        app->textures.staticE[i] = cvLoadTexture(buffer);
+    }
 }
 
 //Handles the choosing of the chosen scene.
@@ -48,7 +54,6 @@ void appUpdate(App* app)
 {
     ImGuiIO* io = igGetIO();
     sceneDisplay(app);
-
     // app -> width = io->DisplaySize.x;
     // app -> height = io->DisplaySize.y;
 

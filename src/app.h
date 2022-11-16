@@ -19,6 +19,8 @@ typedef struct HUD
 typedef struct textures
 {
     CvTexture logo;
+    CvTexture staticE [21];
+    int staticA;
 } textures;
 
 typedef struct App

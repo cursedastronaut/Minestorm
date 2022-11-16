@@ -19,6 +19,7 @@ typedef struct HUD
 typedef struct textures
 {
     CvTexture logo;
+    CvTexture window[2];
     CvTexture staticE [21];
     int staticA;
 } textures;
@@ -38,6 +39,9 @@ typedef struct App
 
     int width;
     int height;
+
+    bool anim;
+    int animtime;
 } App;
 
 void appInit(App* app);

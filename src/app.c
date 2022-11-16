@@ -14,6 +14,8 @@ void appInit(App* app)
     srand(time(NULL));
     playerInit(app);
     app->textures.logo = cvLoadTexture("assets/minestorm-original.png");
+    app->textures.window[0] = cvLoadTexture("assets/window.png");
+    app->textures.window[1] = cvLoadTexture("assets/window1.png");
     for (int i = 0; i != 21; i++)
     {
         char buffer[20];

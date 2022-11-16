@@ -4,4 +4,5 @@ void staticDisplay(App* app)
     app->textures.staticA++;
     if (app->textures.staticA > 20)
         app->textures.staticA = 0;*/
+    
 }

@@ -47,6 +47,9 @@ int main()
         
         // End
         cvEndFrame();
+        app.animtime ++;
+        if (app.animtime > 256)
+            app.animtime = 1;
         glfwSwapBuffers(window);
     }
 

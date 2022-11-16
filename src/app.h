@@ -16,9 +16,15 @@ typedef struct HUD
     int p2_lives;
 } HUD;
 
+typedef struct textures
+{
+    CvTexture logo;
+} textures;
+
 typedef struct App
 {
     struct HUD HUD;
+    struct textures textures;
 
     bool paused;
 

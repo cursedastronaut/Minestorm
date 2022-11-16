@@ -4,21 +4,23 @@
 #include <time.h>
 #include <unistd.h>
 #define PI 3.14159276
-#define maxBulletCount 256
-#define bulletLifetime 5
+#define MAX_BULLET_COUNT 256
+#define BULLET_LIFE_TIME 5
 
-pStruct player;
-struct pBullet bullet [maxBulletCount];
+Player gPlayers [MAX_AMOUNT_OF_PLAYERS];
+Bullet gBullets [MAX_BULLET_COUNT];
 
 //Initializes the player's position
 void playerInit(App* app)
 {
-    player.x = 10;
-    player.y = -7;
-    for (int i = 0; i <= maxBulletCount; i++)
+    gPlayers[0].x = 12.5;
+    gPlayers[0].y = -7;
+    gPlayers[1].x = 7.5;
+    gPlayers[1].y = -7;
+    for (int i = 0; i < MAX_BULLET_COUNT; i++)
     {
-        bullet[i].isActive = 0;
-        bullet[i].timeBeforeDeath = bulletLifetime;
+        gBullets[i].isActive = 0;
+        gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
     }
 }
 //Draws the player to the screen
@@ -32,115 +34,121 @@ void drawPlayer(App* app)
         { -0.35f, -0.3f },
         { -0.5f, -0.3f },
     };
-
-    for (int i = 0; i < 6; ++i)
+    for (int j = 0; j < 2; j++)
     {
-        float2 newPoint = points[i];
-        float2 temp = newPoint;
-        float2 xy = {0, 0};
-        newPoint.x = rotatePoint(temp, xy, player.angle).x + player.x;
-        newPoint.y = rotatePoint(temp, xy, player.angle).y + player.y;
+        for (int i = 0; i < 6; ++i)
+        {
+            float2 newPoint = points[i];
+            float2 temp = newPoint;
+            float2 xy = {0, 0};
+            newPoint.x = rotatePoint(temp, xy, gPlayers[j].angle).x + gPlayers[j].x;
+            newPoint.y = rotatePoint(temp, xy, gPlayers[j].angle).y + gPlayers[j].y;
 
-        cvPathLineTo(newPoint.x, newPoint.y);
+            cvPathLineTo(newPoint.x, newPoint.y);
+        }
+        cvPathStroke(CV_COL32_WHITE, 1);
     }
-    cvPathStroke(CV_COL32_WHITE, 1);
-    cvAddPoint(player.x, player.y, CV_COL32(255,0,0,255));
+    cvAddPoint(gPlayers[0].x, gPlayers[0].y, CV_COL32(255,0,0,255));
+    cvAddPoint(gPlayers[1].x, gPlayers[1].y, CV_COL32(0,255,0,255));
 }
 
 void playerTeleport(App* app)
 {
     ImGuiIO* io = igGetIO();
-    player.x = rand() % ((int) io->DisplaySize.x / 50);
-    player.y = -rand() % ((int) io->DisplaySize.y / 50);
+    gPlayers[0].x = rand() % ((int) io->DisplaySize.x / 50);
+    gPlayers[0].y = -rand() % ((int) io->DisplaySize.y / 50);
 }
 
-bool fireBullet()
+bool fireBullet(int p)
 {
-    float oldestBullet = bulletLifetime;
-    int oldestBulletIndex = 0;
-    for (int i = 0; i <= maxBulletCount; i++)
+    float oldestBullet = BULLET_LIFE_TIME;
+    int oldestBulletIndex = -1;
+    for (int i = 0; i < MAX_BULLET_COUNT; i++)
     {
-        if (bullet[i].isActive == 0)
+        if (gBullets[i].isActive == 0)
         {
-            bullet[i].isActive = 1;
-            bullet[i].x = player.x;
-            bullet[i].y = player.y;
-            bullet[i].angle = player.angle;
+            gBullets[i].isActive = 1;
+            gBullets[i].x = gPlayers[p].x;
+            gBullets[i].y = gPlayers[p].y;
+            gBullets[i].angle = gPlayers[p].angle;
             return 0;
         }
-        if (bullet[i].timeBeforeDeath < oldestBullet)
+        if (gBullets[i].timeBeforeDeath < oldestBullet)
         {
-            oldestBullet = bullet[i].timeBeforeDeath;
+            oldestBullet = gBullets[i].timeBeforeDeath;
             oldestBulletIndex = i;
         }
     }
-    bullet[oldestBulletIndex].x = player.x;
-    bullet[oldestBulletIndex].y = player.y;
-    bullet[oldestBulletIndex].timeBeforeDeath = 3;
-    bullet[oldestBulletIndex].angle = player.angle;
+
+    if (oldestBulletIndex != -1)
+    {
+        gBullets[oldestBulletIndex].x = gPlayers[p].x;
+        gBullets[oldestBulletIndex].y = gPlayers[p].y;
+        gBullets[oldestBulletIndex].timeBeforeDeath = 3;
+        gBullets[oldestBulletIndex].angle = gPlayers[p].angle;
+    }
     return 0;
 }
 void bulletUpdate(App* app)
 {
     ImGuiIO* io = igGetIO();
-    for (int i = 0; i <= maxBulletCount; i++)
+    for (int i = 0; i < MAX_BULLET_COUNT; i++)
     {
-        if (bullet[i].isActive == 1)
+        if (gBullets[i].isActive == 1)
         {
-            bullet[i].x += cosf(bullet[i].angle + (PI / 2)) * app -> deltaTime * 10;
-            bullet[i].y += sinf(bullet[i].angle + (PI / 2)) * app -> deltaTime * 10;
-            bullet[i].timeBeforeDeath -= app -> deltaTime;
-            cvAddPoint(bullet[i].x, bullet[i].y, CV_COL32_WHITE);
-        }
-        if (bullet[i].timeBeforeDeath <= 0)
-        {
-            bullet[i].timeBeforeDeath = bulletLifetime;
-            bullet[i].isActive = 0;
-        }
+            gBullets[i].x += cosf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 10;
+            gBullets[i].y += sinf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 10;
+            gBullets[i].timeBeforeDeath -= app -> deltaTime;
+            cvAddPoint(gBullets[i].x, gBullets[i].y, CV_COL32_WHITE);
 
-        if (bullet[i].x > io->DisplaySize.x / 50 + 1)
-            bullet[i].x = -0.5;
-        if (bullet[i].x < -1)
-            bullet[i].x = io->DisplaySize.x / 50 + 0.5;
+            if (gBullets[i].timeBeforeDeath <= 0)
+            {
+                gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
+                gBullets[i].isActive = 0;
+            }
+        
+            if (gBullets[i].x > io->DisplaySize.x / 50 + 1)
+                gBullets[i].x = -0.5;
+            if (gBullets[i].x < -1)
+                gBullets[i].x = io->DisplaySize.x / 50 + 0.5;
 
-        if (bullet[i].y < -io->DisplaySize.y / 50 - 2 )
-            bullet[i].y = 0.5;
-        if (bullet[i].y > 1)
-            bullet[i].y = -io->DisplaySize.y / 50 - 0.5;
+            if (gBullets[i].y < -io->DisplaySize.y / 50 - 2 )
+                gBullets[i].y = 0.5;
+            if (gBullets[i].y > 1)
+                gBullets[i].y = -io->DisplaySize.y / 50 - 0.5;
+        }
     }
 }
 void bulletDebug()
 {
     int bulletCount = 0;
-    for (int i = 0; i < maxBulletCount; i++)
+    for (int i = 0; i < MAX_BULLET_COUNT; i++)
     {
-        if (bullet[i].isActive == true)
+        if (gBullets[i].isActive == true)
         {
             bulletCount ++;
         }
     }
-    igText("Drawn Bullets: %d | Max: %d", bulletCount, maxBulletCount);
+    igText("Drawn Bullets: %d | Max: %d", bulletCount, MAX_BULLET_COUNT);
 }
 
 
 //Checks for input and prepare for movement
 void playerControls(App* app)
 {
-    float velocity = sqrt(pow(player.momentumX, 2.0f) + pow(player.momentumY, 2.0f));
-    float direction = atan2f(player.momentumY, player.momentumX);
-    //Controls
+    //PLAYER 1
         if (igIsKeyDown(ImGuiKey_D) || igIsKeyDown(ImGuiKey_LeftArrow))
         {
-            player.angle += (480.0f * PI / 360.0f) * app->deltaTime;
+            gPlayers[0].angle += (480.0f * PI / 360.0f) * app->deltaTime;
         }
         if (igIsKeyDown(ImGuiKey_G) || igIsKeyDown(ImGuiKey_RightArrow))
         {
-            player.angle -= (480.0f * PI / 360.0f) * app->deltaTime;
+            gPlayers[0].angle -= (480.0f * PI / 360.0f) * app->deltaTime;
         }
         if (igIsKeyDown(ImGuiKey_R) || igIsKeyDown(ImGuiKey_UpArrow))
         {   
-            player.momentumX += (sin(-player.angle) * 0.25f);
-            player.momentumY += (cos(-player.angle) * 0.25f);
+            gPlayers[0].momentumX += (sin(-gPlayers[0].angle) * 0.25f);
+            gPlayers[0].momentumY += (cos(-gPlayers[0].angle) * 0.25f);
         }
 
         if (igIsKeyReleased(ImGuiKey_K))
@@ -149,61 +157,101 @@ void playerControls(App* app)
         }
         if (igIsKeyReleased(ImGuiKey_N))
         {
-            fireBullet();
+            fireBullet(0);
+        }
+    
+    //PLAYER 2
+        if (igIsKeyDown(ImGuiKey_Keypad4))
+        {
+            gPlayers[1].angle += (480.0f * PI / 360.0f) * app->deltaTime;
+        }
+        if (igIsKeyDown(ImGuiKey_Keypad6))
+        {
+            gPlayers[1].angle -= (480.0f * PI / 360.0f) * app->deltaTime;
+        }
+        if (igIsKeyDown(ImGuiKey_Keypad8))
+        {   
+            gPlayers[1].momentumX += (sin(-gPlayers[1].angle) * 0.25f);
+            gPlayers[1].momentumY += (cos(-gPlayers[1].angle) * 0.25f);
+        }
+        
+        if (igIsKeyReleased(ImGuiKey_K))
+        {
+            playerTeleport(app);
+        }
+        if (igIsKeyReleased(ImGuiKey_B))
+        {
+            fireBullet(1);
         }
 
         //Angle
-        if (player.angle > 2.0f * PI)
+        for (int i = 0; i < 2; i++)
         {
-            player.angle = 0.0f;
+            if (gPlayers[i].angle > 2.0f * PI)
+            {
+                gPlayers[i].angle = 0.0f;
+            }
+            else if (gPlayers[i].angle < 0.0f)
+            {
+                gPlayers[i].angle = 2.0f * PI;
+            }
         }
-        else if (player.angle < 0.0f)
-        {
-            player.angle = 2.0f * PI;
-        }
+        
 }
 //Actual movement processing
 void playerMovement(App* app)
 {
     //Movement
-    player.x += player.momentumX * app->deltaTime;
-    player.y += player.momentumY * app->deltaTime;
+    for (int i = 0; i < 2; i++)
+    {
+        gPlayers[i].x += gPlayers[i].momentumX * app->deltaTime;
+        gPlayers[i].y += gPlayers[i].momentumY * app->deltaTime;
+    }
 }
 //Friction processing
 void playerFrictions(App* app)
 {
     //Friction
-    player.momentumX *= 0.98f;// * app->deltaTime;
-    player.momentumY *= 0.98f;// * app->deltaTime;
+    for (int i = 0; i < 2; i++)
+    {
+        gPlayers[i].momentumX *= 0.98f;
+        gPlayers[i].momentumY *= 0.98f;
+    }
 }
 //Checks if player is Out Of Bounds and moves him to the other side if yes
 void playerOOB(App* app)
 {
     ImGuiIO* io = igGetIO();
     //Out of borders
-    if (player.x > io->DisplaySize.x / 50 + 1)
-        player.x = -0.5;
-    if (player.x < -1)
-        player.x = io->DisplaySize.x / 50 + 0.5;
+    for (int i = 0; i < 2; i++)
+    {
+        if (gPlayers[i].x > io->DisplaySize.x / 50 + 1)
+            gPlayers[i].x = -0.5;
+        if (gPlayers[i].x < -1)
+            gPlayers[i].x = io->DisplaySize.x / 50 + 0.5;
 
-    if (player.y < -io->DisplaySize.y / 50 - 2 )
-        player.y = 0.5;
-    if (player.y > 1)
-        player.y = -io->DisplaySize.y / 50 - 0.5;
+        if (gPlayers[i].y < -io->DisplaySize.y / 50 - 2 )
+            gPlayers[i].y = 0.5;
+        if (gPlayers[i].y > 1)
+            gPlayers[i].y = -io->DisplaySize.y / 50 - 0.5;
+    }
 }
 //Displays debug informations
 void playerDebug(App* app)
 {
-    //Debug
     igText("DeltaTime: %f", app->deltaTime);
-    igText("Player 1");
-    igText("   X: %f", player.x);
-    igText("   Y: %f", player.y);
-    igText("   Momentum X: %f", player.momentumX);
-    igText("   Momentum Y: %f", player.momentumY);
-    igText("   Speed: %f", sqrt(pow(player.momentumX, 2.0f) + pow(player.momentumY, 2.0f)));
-    igText("   Angle: %f", player.angle);
-    igText("----------", player.angle);
+    for (int i = 0; i < 2; i++)
+    {
+        
+        igText("Player %d", i + 1);
+        igText("   X: %f", gPlayers[i].x);
+        igText("   Y: %f", gPlayers[i].y);
+        igText("   Momentum X: %f", gPlayers[i].momentumX);
+        igText("   Momentum Y: %f", gPlayers[i].momentumY);
+        igText("   Speed: %f", sqrt(pow(gPlayers[i].momentumX, 2.0f) + pow(gPlayers[i].momentumY, 2.0f)));
+        igText("   Angle: %f", gPlayers[i].angle);
+        igText("----------");
+    }
 }
 //Unites all of the above functions
 void playerScript(App* app)
@@ -214,6 +262,6 @@ void playerScript(App* app)
     playerMovement(app);
     bulletUpdate(app);
     playerOOB(app);
-    playerDebug(app);
     bulletDebug();
+    playerDebug(app);
 }

@@ -38,16 +38,16 @@ void displayGame(App* app)
 
 void processingGame(App* app)
 {
-    playerScript(app);
-    //entityMineFloating(app);
-    entityType();
-    pauseGame(app);
-    if (igIsKeyDown(ImGuiKey_Space))
+    if (app->paused != true)
     {
-        //DEBUG
-        if (igIsKeyDown(ImGuiKey_A))
-        {
-            app->scene = 3;
-        }
+        playerScript(app);
+        //entityMineFloating(app);
+        entityType();
     }
+    pauseGame(app);
+    /*
+    if (igIsKeyDown(ImGuiKey_A))
+    {
+        app->scene = 3;
+    }*/
 }

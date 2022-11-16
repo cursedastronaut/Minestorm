@@ -13,6 +13,7 @@ void appInit(App* app)
     app->paused = false;
     srand(time(NULL));
     playerInit(app);
+    app->textures.logo = cvLoadTexture("assets/minestorm-original.png");
 }
 
 //Handles the choosing of the chosen scene.

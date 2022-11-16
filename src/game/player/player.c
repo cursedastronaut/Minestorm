@@ -4,8 +4,8 @@
 #include <time.h>
 #include <unistd.h>
 #define PI 3.14159276
-#define maxBulletCount 1000000
-#define bulletLifetime 100
+#define maxBulletCount 256
+#define bulletLifetime 5
 
 pStruct player;
 struct pBullet bullet [maxBulletCount];
@@ -37,38 +37,24 @@ void drawPlayer(App* app)
     {
         float2 newPoint = points[i];
         float2 temp = newPoint;
-        newPoint.x = rotatePoint(temp, points[0], player.angle).x + player.x;
-        newPoint.y = rotatePoint(temp, points[0], player.angle).y + player.y;
+        float2 xy = {0, 0};
+        newPoint.x = rotatePoint(temp, xy, player.angle).x + player.x;
+        newPoint.y = rotatePoint(temp, xy, player.angle).y + player.y;
 
         cvPathLineTo(newPoint.x, newPoint.y);
     }
     cvPathStroke(CV_COL32_WHITE, 1);
+    cvAddPoint(player.x, player.y, CV_COL32(255,0,0,255));
 }
 
 void playerTeleport(App* app)
 {
     ImGuiIO* io = igGetIO();
-    srand( time(NULL) );
-    player.x = rand();
-    player.x /= RAND_MAX / 50;
-    srand( time(0)-7 );
-    player.y = -rand();
-    player.y /= RAND_MAX / 50;
-
-    if (player.x < 1)
-    {
-        player.x = 1;
-    }
-    if (player.y > -1)
-        player.y=-1;
-    if (player.y < -io->DisplaySize.y/50 )
-        player.y= -io->DisplaySize.y/50 + 1;
-    if (player.x > io->DisplaySize.x/50)
-        player.x = io->DisplaySize.x/50-1;
-
+    player.x = rand() % ((int) io->DisplaySize.x / 50);
+    player.y = -rand() % ((int) io->DisplaySize.y / 50);
 }
 
-void fireBullet()
+bool fireBullet()
 {
     float oldestBullet = bulletLifetime;
     int oldestBulletIndex = 0;
@@ -123,6 +109,19 @@ void bulletUpdate(App* app)
             bullet[i].y = -io->DisplaySize.y / 50 - 0.5;
     }
 }
+void bulletDebug()
+{
+    int bulletCount = 0;
+    for (int i = 0; i < maxBulletCount; i++)
+    {
+        if (bullet[i].isActive == true)
+        {
+            bulletCount ++;
+        }
+    }
+    igText("Drawn Bullets: %d | Max: %d", bulletCount, maxBulletCount);
+}
+
 
 //Checks for input and prepare for movement
 void playerControls(App* app)
@@ -144,11 +143,11 @@ void playerControls(App* app)
             player.momentumY += (cos(-player.angle) * 0.25f);
         }
 
-        if (igIsKeyDown(ImGuiKey_K))
+        if (igIsKeyReleased(ImGuiKey_K))
         {
             playerTeleport(app);
         }
-        if (igIsKeyPressed(ImGuiKey_N, 1))
+        if (igIsKeyReleased(ImGuiKey_N))
         {
             fireBullet();
         }
@@ -198,12 +197,13 @@ void playerDebug(App* app)
     //Debug
     igText("DeltaTime: %f", app->deltaTime);
     igText("Player 1");
-    igText("X: %f", player.x);
-    igText("Y: %f", player.y);
-    igText("Speed: %f", sqrt(pow(player.momentumX, 2.0f) + pow(player.momentumY, 2.0f)));
-    igText("Momentum X: %f", player.momentumX);
-    igText("Momentum Y: %f", player.momentumY);
-    igText("Angle: %f", player.angle);
+    igText("   X: %f", player.x);
+    igText("   Y: %f", player.y);
+    igText("   Momentum X: %f", player.momentumX);
+    igText("   Momentum Y: %f", player.momentumY);
+    igText("   Speed: %f", sqrt(pow(player.momentumX, 2.0f) + pow(player.momentumY, 2.0f)));
+    igText("   Angle: %f", player.angle);
+    igText("----------", player.angle);
 }
 //Unites all of the above functions
 void playerScript(App* app)
@@ -215,4 +215,5 @@ void playerScript(App* app)
     bulletUpdate(app);
     playerOOB(app);
     playerDebug(app);
+    bulletDebug();
 }

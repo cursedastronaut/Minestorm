@@ -5,4 +5,5 @@ typedef struct pStruct
     float angle;
     float momentumX;
     float momentumY;
+    float2 pos;
 } pStruct;

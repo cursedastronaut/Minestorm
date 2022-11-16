@@ -1,6 +1,7 @@
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 #include <cimgui.h>
 #include <canvas.h>
+#include <time.h>
 #include <math.h>
 #include "geo/geo.c"            //Moteur de jeu
 #include "app.h"                //Db
@@ -10,6 +11,7 @@
 void appInit(App* app)
 {
     app->paused = false;
+    srand(time(NULL));
     playerInit(app);
 }
 

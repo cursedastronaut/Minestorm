@@ -18,14 +18,14 @@ void staticDisplay(App* app)
         {
             for (int x = 0; x != HORIZONTAL_STATICEFFECT_BLOCKS + 1; x++)
             {
-            for (int i = 0; i != 5; i++)
+            for (int i = 0; i != 4; i++)
                 {
                     cvPathLineTo(   points[i+1].x + (io->DisplaySize.x / 50.f) / HORIZONTAL_STATICEFFECT_BLOCKS * x,
                                     points[i+1].y + (io->DisplaySize.y / 50.f) / VERTICAL_STATICEFFECT_BLOCKS * y
                                 );
                 }
                 int intensity = rand() % (255 - 128 + 1) + 128;
-                cvPathFill(CV_COL32(intensity, intensity, intensity, 8)); 
+                cvPathFill(CV_COL32(intensity, intensity, intensity, 255)); 
                 cvPathStroke(CV_COL32(0,0,0,0), 1);
             }
         }

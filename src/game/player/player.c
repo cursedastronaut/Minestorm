@@ -163,15 +163,15 @@ void playerControls(App* app)
         }
     
     //PLAYER 2
-        if (igIsKeyDown(ImGuiKey_Keypad4) || igIsKeyReleased(ImGuiKey_J))
+        if (igIsKeyDown(ImGuiKey_Keypad4) || igIsKeyDown(ImGuiKey_J))
         {
             gPlayers[1].angle += (480.0f * PI / 360.0f) * app->deltaTime;
         }
-        if (igIsKeyDown(ImGuiKey_Keypad6) ||igIsKeyReleased(ImGuiKey_L))
+        if (igIsKeyDown(ImGuiKey_Keypad6) ||igIsKeyDown(ImGuiKey_L))
         {
             gPlayers[1].angle -= (480.0f * PI / 360.0f) * app->deltaTime;
         }
-        if (igIsKeyDown(ImGuiKey_Keypad8) || igIsKeyReleased(ImGuiKey_I))
+        if (igIsKeyDown(ImGuiKey_Keypad8) || igIsKeyDown(ImGuiKey_I))
         {   
             gPlayers[1].momentumX += (sin(-gPlayers[1].angle) * 0.25f);
             gPlayers[1].momentumY += (cos(-gPlayers[1].angle) * 0.25f);

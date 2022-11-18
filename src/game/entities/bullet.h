@@ -5,4 +5,6 @@ typedef struct Bullet
     float angle;
     float timeBeforeDeath;
     int isActive;
+    int opacity;
+    bool player;
 } Bullet;

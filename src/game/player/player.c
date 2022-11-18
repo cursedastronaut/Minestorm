@@ -2,10 +2,9 @@
 #include "../entities/bullet.h"
 #include <stdlib.h>
 #include <time.h>
+#include "../tinkering.h"
 #include <unistd.h>
-#define PI 3.14159276
-#define MAX_BULLET_COUNT 256
-#define BULLET_LIFE_TIME 5
+
 
 Player gPlayers [MAX_AMOUNT_OF_PLAYERS];
 Bullet gBullets [MAX_BULLET_COUNT];
@@ -69,10 +68,12 @@ bool fireBullet(int p)
     {
         if (gBullets[i].isActive == 0)
         {
-            gBullets[i].isActive = 1;
-            gBullets[i].x = gPlayers[p].x;
-            gBullets[i].y = gPlayers[p].y;
-            gBullets[i].angle = gPlayers[p].angle;
+            gBullets[i].isActive = 1;               //Bullet is now active.
+            gBullets[i].x = gPlayers[p].x;          //Bullet's X position is set to Player's X position
+            gBullets[i].y = gPlayers[p].y;          //Bullet's Y position is set to Player's Y position
+            gBullets[i].angle = gPlayers[p].angle;  //Bullet's angle is set to Player's angle
+            gBullets[i].opacity = 255;              //Bullet's opacity is set to max.
+            gBullets[i].player = p;                 //Bullet's owner is the player who fired it.
             return 0;
         }
         if (gBullets[i].timeBeforeDeath < oldestBullet)
@@ -101,7 +102,12 @@ void bulletUpdate(App* app)
             gBullets[i].x += cosf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 10;
             gBullets[i].y += sinf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 10;
             gBullets[i].timeBeforeDeath -= app -> deltaTime;
-            cvAddPoint(gBullets[i].x, gBullets[i].y, CV_COL32_WHITE);
+            cvAddPoint(gBullets[i].x, gBullets[i].y, CV_COL32(255,255,255,gBullets[i].opacity));
+
+            if (gBullets[i].timeBeforeDeath <= 1.0)
+            {
+                gBullets[i].opacity -= 255/60;
+            }
 
             if (gBullets[i].timeBeforeDeath <= 0)
             {

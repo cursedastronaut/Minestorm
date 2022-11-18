@@ -1,13 +1,12 @@
 #pragma once
 #include "entities.h"
 #include <stdlib.h>
-#define MINE_AMOUNT 10
-#define PI 3.14159276
+#include "../tinkering.h"
 struct entMF fmine [MINE_AMOUNT];
 void mineInit()
 {
     ImGuiIO* io = igGetIO();
-    for(int i = 0; i < MINE_AMOUNT; i++)
+    for(int i = 0; i < MINE_AMOUNT ; i++)
     {
         fmine[i].angle = rand() % 360;
         fmine[i].x = rand() % ((int)igGetIO()->DisplaySize.x / 50);
@@ -43,12 +42,11 @@ void drawMineFloating(entMF currentMine)
 void entityMineFloating(App* app)
 {
     //Movement
-    for (int i = 0; i < MINE_AMOUNT-1; i++)
+    for (int i = 0; i < MINE_AMOUNT; i++)
     {
         drawMineFloating(fmine[i]);
         
         fmine[i].x += fmine[i].momentumX * app -> deltaTime;
         fmine[i].y += fmine[i].momentumY * app -> deltaTime;     
     }
-
 }

@@ -11,12 +11,12 @@
 void appInit(App* app)
 {
     app->paused = false;
-    srand(time(NULL));
-    playerInit(app);
-    app->graphics.textures.logo = cvLoadTexture("assets/minestorm-original.png");
-    app->graphics.textures.window[0] = cvLoadTexture("assets/window.png");
-    app->graphics.textures.window[1] = cvLoadTexture("assets/window1.png");
-    app->graphics.textures.controls = cvLoadTexture("assets/controls.png");
+    srand(time(NULL));      //Initial srand
+    playerInit(app);        //Initialisation of Player
+    app->graphics.textures.logo = cvLoadTexture("assets/minestorm-original.png");   //Loading the logo
+    app->graphics.textures.window[0] = cvLoadTexture("assets/window.png");          //Loading the menu window
+    app->graphics.textures.window[1] = cvLoadTexture("assets/window1.png");         //Same, with the second frame of the flickering effect
+    app->graphics.textures.controls = cvLoadTexture("assets/controls.png");         //Loads controls window
     app->graphics.show_static = true;
 }
 

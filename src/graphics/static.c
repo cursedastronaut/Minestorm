@@ -25,7 +25,7 @@ void staticDisplay(App* app)
                                 );
                 }
                 int intensity = rand() % (255 - 128 + 1) + 128;
-                cvPathFill(CV_COL32(intensity, intensity, intensity, 255)); 
+                cvPathFill(CV_COL32(intensity, intensity, intensity, 16)); 
                 cvPathStroke(CV_COL32(0,0,0,0), 1);
             }
         }

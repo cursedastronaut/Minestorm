@@ -34,6 +34,7 @@ void sceneDisplay(App* app)
 
     //Scene 1 = Game
     case 1:
+        gameInit(app);
         displayGame(app);
         processingGame(app);
         break;

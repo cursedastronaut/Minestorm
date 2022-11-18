@@ -39,6 +39,7 @@ typedef struct App
 
     bool anim;
     int animtime;
+    bool gameinit;
 } App;
 
 void appInit(App* app);

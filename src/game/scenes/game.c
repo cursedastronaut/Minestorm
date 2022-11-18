@@ -2,6 +2,15 @@
 //#include "../player/player.c"
 #include "../entities/floating_mine.c"
 
+void gameInit(App* app)
+{
+    if (app->gameinit == false)
+    {
+        mineInit(app);
+        app->gameinit = true;
+    }
+}
+
 void pauseGame(App* app)
 {
     if (igIsKeyReleased(ImGuiKey_Space))
@@ -37,7 +46,7 @@ void processingGame(App* app)
     if (app->paused != true)
     {
         playerScript(app);
-        //entityMineFloating(app);
+        entityMineFloating(app);
         entityType();
     }
     pauseGame(app);

@@ -11,7 +11,7 @@ typedef struct entMF
     float type;         //Type of mine
     float x;            //Mine's X position
     float y;            //Mine's Y position
-    float angle;        //Mine's angle (Useless)
+    float angle;        //Mine's angle
     float momentumX;    //Mine's X momentum
     float momentumY;    //Mine's Y momentum
     //struct entMF next;

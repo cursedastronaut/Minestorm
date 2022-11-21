@@ -6,7 +6,8 @@
 #define BULLET_LIFE_TIME 5
 
 //MINE TINKERING
-#define MINE_AMOUNT 1
+#define MINE_MAX 100         //Max Mines on screen
+#define MINE_AMOUNT_INITIAL 2   //Number of mines to initially spawn
 
 
 

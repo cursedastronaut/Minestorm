@@ -10,8 +10,9 @@ typedef struct float2
 typedef struct textures
 {
     CvTexture logo;
-    CvTexture window[2];
+    CvTexture window;
     CvTexture controls;
+    CvTexture copyright;
     CvTexture staticE [21];
     int staticA;
 } textures;
@@ -22,9 +23,15 @@ typedef struct graphics
     bool show_static;
 } graphics;
 
+typedef struct sceneMainMenu
+{
+    bool show_controls;
+} sceneMainMenu;
+
 typedef struct App
 {
     struct graphics graphics;
+    struct sceneMainMenu sceneMainMenu;
 
     bool paused;
 
@@ -37,7 +44,6 @@ typedef struct App
     int width;
     int height;
 
-    bool anim;
     int animtime;
     bool gameinit;
 } App;

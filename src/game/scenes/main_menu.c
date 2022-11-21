@@ -9,16 +9,16 @@
 void displayMainMenu(App* app)
 {
     ImGuiIO* io = igGetIO();
-    cvAddTextBorder((io->DisplaySize.x/50) / 2 - 3.4, -io->DisplaySize.y/50+1, CV_COL32_WHITE, "© GCE 1982 - ISART DIGITAL 2022");
-    if (app->animtime % 2 == 0)
-        app->anim = !app->anim;
-    if (app->anim)
-        cvAddTexture((io->DisplaySize.x/50) / 2, - (io->DisplaySize.y/50)/2, app->graphics.textures.window[0]);
+    cvAddTexture(   (io->DisplaySize.x/50) / 2,     -2,                         app->graphics.textures.logo);       //Draws the logo.
+    cvAddTexture(   (io->DisplaySize.x/50) / 2,     -(io->DisplaySize.y/50)+1,  app->graphics.textures.copyright);  //Here, I use a texture instead of a text because it centers by itself.
+    if (app->sceneMainMenu.show_controls == false)
+        cvAddTexture((io->DisplaySize.x/50) / 2,    - (io->DisplaySize.y/50)/2, app->graphics.textures.window);
     else
-        cvAddTexture((io->DisplaySize.x/50) / 2, - (io->DisplaySize.y/50)/2, app->graphics.textures.window[1]);
-    if (igIsKeyDown(ImGuiKey_C))
-        cvAddTexture((io->DisplaySize.x/50) / 2, - (io->DisplaySize.y/50)/2, app->graphics.textures.controls);
-    cvAddTexture((io->DisplaySize.x/50) / 2, -2, app->graphics.textures.logo);
+        cvAddTexture((io->DisplaySize.x/50) / 2,    - (io->DisplaySize.y/50)/2, app->graphics.textures.controls);
+    
+    
+    if (igIsKeyReleased(ImGuiKey_C))
+        app->sceneMainMenu.show_controls = !app->sceneMainMenu.show_controls;
 }
 
 

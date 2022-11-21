@@ -18,12 +18,13 @@ void drawHUDScore(App* app)
         if (i == 0)
         {
         cvAddText(
-            (io->DisplaySize.x/50) - (strlen(output)) * 0.4 , //Formula to move text when there are more numbers
+             8/50,
             0, CV_COL32_WHITE, output);
         }
         else
         {
-            cvAddText(8/50,0, CV_COL32_WHITE, output);
+            if (app->twoPlayers)
+                cvAddText((io->DisplaySize.x/50) - (strlen(output)) * 0.4,0, CV_COL32_WHITE, output);
         }
     }
 }

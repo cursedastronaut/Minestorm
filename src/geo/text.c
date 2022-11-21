@@ -1,8 +1,5 @@
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 
-
-//TO_EDIT
-
 //Uses cvAddText and makes a border in a stupid way.
 void cvAddTextBorder(float x, float y, unsigned int color, const char* text)
 {

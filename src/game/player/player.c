@@ -3,10 +3,9 @@
 #include "../../geo/collision.c"
 #include <stdlib.h>
 #include <time.h>
+#include "../tinkering.h"
 #include <unistd.h>
-#define PI 3.14159276
-#define MAX_BULLET_COUNT 256
-#define BULLET_LIFE_TIME 5
+
 
 Player gPlayers [MAX_AMOUNT_OF_PLAYERS];
 Bullet gBullets [MAX_BULLET_COUNT];
@@ -14,22 +13,24 @@ Bullet gBullets [MAX_BULLET_COUNT];
 //Initializes the player's position
 void playerInit(App* app)
 {
+    //Sets the positions
     gPlayers[0].x = 12.5;
     gPlayers[0].y = -7;
     gPlayers[1].x = 7.5;
     gPlayers[1].y = -7;
-    for (int i = 0; i < MAX_BULLET_COUNT; i++)
+
+    for (int i = 0; i < MAX_BULLET_COUNT; i++) //Loops through the bullets
     {
-        gBullets[i].isActive = 0;
-        gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
+        gBullets[i].isActive = 0; //Deactivating the bullets (just in case)
+        gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME; //See tinkering.h
     }
-    gPlayers[0].score = 0;
-    gPlayers[1].score = 0;
+    gPlayers[0].score = 0; //Initial score
+    gPlayers[1].score = 0;  //Initial score
 }
 //Draws the player to the screen
 void drawPlayer(App* app)
 {
-    float2 points[6] = {
+    float2 points[6] = { //Shape
         { 0.0f, 0.5f },
         { 0.5f, -0.3f },
         { 0.35f, -0.3f },
@@ -37,9 +38,9 @@ void drawPlayer(App* app)
         { -0.35f, -0.3f },
         { -0.5f, -0.3f },
     };
-    for (int j = 0; j < 2; j++)
+    for (int j = 0; j < 2; j++) //Looping through the players. j is the player index variable.
     {
-        for (int i = 0; i < 6; ++i)
+        for (int i = 0; i < 6; ++i) // Looping through the points making the shape.
         {
             float2 newPoint = points[i];
             float2 temp = newPoint;
@@ -76,14 +77,14 @@ void drawPlayer(App* app)
     // checkCollisionPointTriangle(collisionTriangle, (float2){gPlayers[0].x, gPlayers[0].y}, gPlayers[0].angle);
     checkCollisionSquareSquare(staticSquare, collisionSquare);
 }
-
-void playerTeleport(App* app)
+//Teleports the player
+void playerTeleport(App* app, int p)
 {
     ImGuiIO* io = igGetIO();
-    gPlayers[0].x = rand() % ((int) io->DisplaySize.x / 50);
-    gPlayers[0].y = -rand() % ((int) io->DisplaySize.y / 50);
+    gPlayers[p].x = rand() % ((int) io->DisplaySize.x / 50);  //Moves the player with the index p to a
+    gPlayers[p].y = -rand() % ((int) io->DisplaySize.y / 50); //random X and Y position within window limits.
 }
-
+//Fires a bullet
 bool fireBullet(int p)
 {
     float oldestBullet = BULLET_LIFE_TIME;
@@ -92,10 +93,12 @@ bool fireBullet(int p)
     {
         if (gBullets[i].isActive == 0)
         {
-            gBullets[i].isActive = 1;
-            gBullets[i].x = gPlayers[p].x;
-            gBullets[i].y = gPlayers[p].y;
-            gBullets[i].angle = gPlayers[p].angle;
+            gBullets[i].isActive = 1;               //Bullet is now active.
+            gBullets[i].x = gPlayers[p].x;          //Bullet's X position is set to Player's X position
+            gBullets[i].y = gPlayers[p].y;          //Bullet's Y position is set to Player's Y position
+            gBullets[i].angle = gPlayers[p].angle;  //Bullet's angle is set to Player's angle
+            gBullets[i].opacity = 255;              //Bullet's opacity is set to max.
+            gBullets[i].player = p;                 //Bullet's owner is the player who fired it.
             return 0;
         }
         if (gBullets[i].timeBeforeDeath < oldestBullet)
@@ -121,17 +124,23 @@ void bulletUpdate(App* app)
     {
         if (gBullets[i].isActive == 1)
         {
-            gBullets[i].x += cosf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 10;
-            gBullets[i].y += sinf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 10;
-            gBullets[i].timeBeforeDeath -= app -> deltaTime;
-            cvAddPoint(gBullets[i].x, gBullets[i].y, CV_COL32_WHITE);
+            gBullets[i].x += cosf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 10; //Moves the bullet according
+            gBullets[i].y += sinf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 10; //to its firing angle.
+            gBullets[i].timeBeforeDeath -= app -> deltaTime;    //Lowering its lifetime.
+            cvAddPoint(gBullets[i].x, gBullets[i].y, CV_COL32(255,255,255,gBullets[i].opacity)); //Drawing the bullet
+
+            if (gBullets[i].timeBeforeDeath <= 1.0) //Gradually lowering the opacity
+            {                                       //of the bullet before it dies.
+                gBullets[i].opacity -= 255/60;
+            }
 
             if (gBullets[i].timeBeforeDeath <= 0)
             {
                 gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
-                gBullets[i].isActive = 0;
+                gBullets[i].isActive = 0;                       //Killing the bullet.
             }
         
+            //Making it loop with the borders
             if (gBullets[i].x > io->DisplaySize.x / 50 + 1)
                 gBullets[i].x = -0.5;
             if (gBullets[i].x < -1)
@@ -178,7 +187,7 @@ void playerControls(App* app)
 
         if (igIsKeyReleased(ImGuiKey_T))
         {
-            playerTeleport(app);
+            playerTeleport(app,0);
         }
         if (igIsKeyReleased(ImGuiKey_F) || igIsKeyReleased(ImGuiKey_E))
         {
@@ -202,7 +211,7 @@ void playerControls(App* app)
         
         if (igIsKeyReleased(ImGuiKey_K))
         {
-            playerTeleport(app);
+            playerTeleport(app,1);
         }
         if (igIsKeyReleased(ImGuiKey_U) || igIsKeyReleased(ImGuiKey_O))
         {

@@ -12,13 +12,13 @@ void appInit(App* app)
 {
     app->paused = false;
     srand(time(NULL));      //Initial srand
-    playerInit(app);        //Initialisation of Player
     app->graphics.textures.logo = cvLoadTexture("assets/minestorm-original.png");   //Loading the logo
     app->graphics.textures.window = cvLoadTexture("assets/window.png");             //Loading the menu window
     app->graphics.textures.controls = cvLoadTexture("assets/controls.png");         //Loads controls window
     app->graphics.textures.copyright = cvLoadTexture("assets/copyright.png");         //Loads copyright text
     app->graphics.show_static = false;
     app->sceneMainMenu.show_controls = false;
+    playerInit(app);
 }
 
 //Handles the choosing of the chosen scene.

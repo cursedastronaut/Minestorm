@@ -8,4 +8,5 @@ typedef struct Player
     float momentumX;
     float momentumY;
     int score;
+    int lives;
 } Player;

@@ -1,3 +1,4 @@
+#pragma once
 #include <string.h>
 #include "../player/player.c"
 
@@ -22,7 +23,7 @@ void drawHUDScore(App* app)
         }
         else
         {
-            cvAddText(5,0, CV_COL32_WHITE, output);
+            cvAddText(8/50,0, CV_COL32_WHITE, output);
         }
     }
 }

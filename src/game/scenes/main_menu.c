@@ -27,7 +27,7 @@ void displayMainMenu(App* app)
 void processingMainMenu(App* app)
 {
     //Lance une partie solo
-    if (igIsKeyDown(ImGuiKey_F))
+    if (igIsKeyReleased(ImGuiKey_F))
     {
         app->twoPlayers = false;
         app->scene = 1;
@@ -35,7 +35,7 @@ void processingMainMenu(App* app)
     }
 
     //Lance une partie deux joueurs
-    if (igIsKeyDown(ImGuiKey_K))
+    if (igIsKeyReleased(ImGuiKey_K))
     {
         app->twoPlayers = true;
         app->scene = 1;

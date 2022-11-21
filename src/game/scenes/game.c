@@ -29,11 +29,9 @@ void pauseGame(App* app)
             app->twoPlayers = false;
             app->scene = 0;
         }
-
-
     }
-    
 }
+
 
 void displayGame(App* app)
 {

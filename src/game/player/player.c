@@ -1,3 +1,4 @@
+#pragma once
 #include "player.h"
 #include "../entities/bullet.h"
 #include "../../geo/collision.c"
@@ -14,18 +15,28 @@ Bullet gBullets [MAX_BULLET_COUNT];
 void playerInit(App* app)
 {
     //Sets the positions
-    gPlayers[0].x = 12.5;
-    gPlayers[0].y = -7;
-    gPlayers[1].x = 7.5;
-    gPlayers[1].y = -7;
+    gPlayers[0].x = 12.5;       gPlayers[0].y = -7;
+    if (app->twoPlayers == true)
+    {
+        gPlayers[1].x = 7.5;    gPlayers[1].y = -7;
+    }
+    else
+    {
+        gPlayers[1].x = 0;    gPlayers[1].y = 2;
+    }
 
     for (int i = 0; i < MAX_BULLET_COUNT; i++) //Loops through the bullets
     {
         gBullets[i].isActive = 0; //Deactivating the bullets (just in case)
         gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME; //See tinkering.h
     }
-    gPlayers[0].score = 0; //Initial score
-    gPlayers[1].score = 0;  //Initial score
+    for (int i = 0; i<2 ; i++)
+    {
+        gPlayers[i].score = 0; //Initial score
+        gPlayers[i].lives = 3;
+        gPlayers[i].momentumX = 0;
+        gPlayers[i].momentumY = 0;
+    }
 }
 //Draws the player to the screen
 void drawPlayer(App* app)
@@ -54,12 +65,6 @@ void drawPlayer(App* app)
     }
     cvAddPoint(gPlayers[0].x, gPlayers[0].y, CV_COL32(255,0,0,255));
     cvAddPoint(gPlayers[1].x, gPlayers[1].y, CV_COL32(0,255,0,255));
-    // float2 collisionTriangle[3] =
-    // {
-    //     { 0.0f, 0.5f },
-    //     { 0.5f, -0.3f },
-    //     { -0.5f, -0.3f }
-    // };
     float2 staticSquare[4] = 
     {
         { 8, -7 },
@@ -74,7 +79,6 @@ void drawPlayer(App* app)
         { 0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y},
         { -0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y}
     };
-    // checkCollisionPointTriangle(collisionTriangle, (float2){gPlayers[0].x, gPlayers[0].y}, gPlayers[0].angle);
     checkCollisionSquareSquare(staticSquare, collisionSquare, app);
 }
 //Teleports the player
@@ -94,11 +98,15 @@ bool fireBullet(int p)
         if (gBullets[i].isActive == 0)
         {
             gBullets[i].isActive = 1;               //Bullet is now active.
-            gBullets[i].x = gPlayers[p].x;          //Bullet's X position is set to Player's X position
-            gBullets[i].y = gPlayers[p].y;          //Bullet's Y position is set to Player's Y position
             gBullets[i].angle = gPlayers[p].angle;  //Bullet's angle is set to Player's angle
+            gBullets[i].x = rotatePoint( (float2){0.f,0.8f},
+                (float2){0.f, 0.f}, gPlayers[p].angle).x + gPlayers[p].x;          //Bullet's X position is set to Player's X position
+            gBullets[i].y = rotatePoint( (float2){0.f,0.8f},
+                (float2){0.f, 0.f}, gPlayers[p].angle).y + gPlayers[p].y;          //Bullet's Y position is set to Player's Y position
             gBullets[i].opacity = 255;              //Bullet's opacity is set to max.
             gBullets[i].player = p;                 //Bullet's owner is the player who fired it.
+            gBullets[i].momentumX = (sin(-gPlayers[p].angle) * 0.27f);
+            gBullets[i].momentumY = (cos(-gPlayers[p].angle) * 0.27f);
             return 0;
         }
         if (gBullets[i].timeBeforeDeath < oldestBullet)
@@ -124,8 +132,8 @@ void bulletUpdate(App* app)
     {
         if (gBullets[i].isActive == 1)
         {
-            gBullets[i].x += cosf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 10; //Moves the bullet according
-            gBullets[i].y += sinf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 10; //to its firing angle.
+            gBullets[i].x += gBullets[i].momentumX;  //cosf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 50; //Moves the bullet according
+            gBullets[i].y += gBullets[i].momentumY;  //sinf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 50; //to its firing angle.
             gBullets[i].timeBeforeDeath -= app -> deltaTime;    //Lowering its lifetime.
             cvAddPoint(gBullets[i].x, gBullets[i].y, CV_COL32(255,255,255,gBullets[i].opacity)); //Drawing the bullet
 
@@ -139,7 +147,27 @@ void bulletUpdate(App* app)
                 gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
                 gBullets[i].isActive = 0;                       //Killing the bullet.
             }
-        
+            float2 bulletSquare[4] =
+            {
+                { -0.2f + gBullets[i].x, 0.2f + gBullets[i].y},
+                { 0.2f + gBullets[i].x, 0.2f + gBullets[i].y},
+                { 0.2f + gBullets[i].x, -0.2f + gBullets[i].y},
+                { -0.2f + gBullets[i].x, -0.2f + gBullets[i].y}
+            };
+            float2 playerSquare[4] =
+            {
+                { -0.5f + gPlayers[0].x, 0.5f + gPlayers[0].y},
+                { 0.5f + gPlayers[0].x, 0.5f + gPlayers[0].y},
+                { 0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y},
+                { -0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y}
+            };
+            if (checkCollisionSquareSquare(bulletSquare, playerSquare, app))
+            {
+                gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
+                gBullets[i].isActive = 0;                       //Killing the bullet.
+                gPlayers[0].lives --;
+            }
+
             //Making it loop with the borders
             if (gBullets[i].x > io->DisplaySize.x / 50 + 1)
                 gBullets[i].x = -0.5;
@@ -185,16 +213,18 @@ void playerControls(App* app)
             gPlayers[0].momentumY += (cos(-gPlayers[0].angle) * 0.25f);
         }
 
-        if (igIsKeyReleased(ImGuiKey_T))
+        if (igIsKeyReleased(ImGuiKey_T) || igIsKeyReleased(ImGuiKey_E))
         {
             playerTeleport(app,0);
         }
-        if (igIsKeyReleased(ImGuiKey_F) || igIsKeyReleased(ImGuiKey_E))
+        if (igIsKeyReleased(ImGuiKey_F))
         {
             fireBullet(0);
         }
     
     //PLAYER 2
+    if (app->twoPlayers == true)
+    {
         if (igIsKeyDown(ImGuiKey_Keypad4) || igIsKeyDown(ImGuiKey_J))
         {
             gPlayers[1].angle += (480.0f * PI / 360.0f) * app->deltaTime;
@@ -217,6 +247,7 @@ void playerControls(App* app)
         {
             fireBullet(1);
         }
+    }
 
         //Angle
         for (int i = 0; i < 2; i++)

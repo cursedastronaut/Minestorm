@@ -24,27 +24,27 @@ bool checkCollisionSquareSquare(float2 square1[4], float2 square2[4])
     for (int i = 1; i <= 3; i++)
     {
         //projection des deux carrés du point de vue du 1er carré.
-        xMin1 = fminf(square1[i - 1].x, square1[i].x);
-        xMax1 = fmaxf(square1[i - 1].x, square1[i].x);
-        yMin1 = fminf(square1[i - 1].y, square1[i].y);
-        yMax1 = fmaxf(square1[i - 1].y, square1[i].y);
+        xMin1 = fminf(square1[i - 2].x, square1[i].x);
+        xMax1 = fmaxf(square1[i - 2].x, square1[i].x);
+        yMin1 = fminf(square1[i - 2].y, square1[i].y);
+        yMax1 = fmaxf(square1[i - 2].y, square1[i].y);
 
-        xMin2 = fminf(square2[i - 1].x, square2[i].x);
-        xMax2 = fmaxf(square2[i - 1].x, square2[i].x);
-        yMin2 = fminf(square2[i - 1].y, square2[i].y);
-        yMax2 = fmaxf(square2[i - 1].y, square2[i].y);
+        xMin2 = fminf(square2[i - 2].x, square2[i].x);
+        xMax2 = fmaxf(square2[i - 2].x, square2[i].x);
+        yMin2 = fminf(square2[i - 2].y, square2[i].y);
+        yMax2 = fmaxf(square2[i - 2].y, square2[i].y);
     }
 
     //DEBUG projections
     cvAddLine(xMin1, -3, xMax1, -3, CV_COL32(255, 255, 0, 255));
     cvAddLine(xMin2, -3, xMax2, -3, CV_COL32(255, 0, 255, 255));
-
     cvAddLine(17, yMin1, 17, yMax1, CV_COL32(255, 255, 0, 255));
     cvAddLine(17, yMin2, 17, yMax2, CV_COL32(255, 0, 255, 255));
     //Détecte s'il y a une collision et dessine les boite de collisions
     // if (xMax1 <= xMin2 || yMax1 >= yMin2)
-    if (xMax1 >= xMin2 && xMin1 <= xMax2)
+    if (xMax1 >= xMin2 && xMin1 <= xMax2  &&  yMax1 >= yMin2 && yMin1 <= yMax2)
     {
+        
         for (int i = 0; i <= 3; ++i)
         {
             float2 newPoint = square1[i];

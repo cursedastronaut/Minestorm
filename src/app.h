@@ -21,6 +21,7 @@ typedef struct graphics
 {
     struct textures textures;
     bool show_static;
+    bool show_collisionbox;
 } graphics;
 
 typedef struct sceneMainMenu

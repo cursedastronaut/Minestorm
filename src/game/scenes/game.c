@@ -48,6 +48,10 @@ void processingGame(App* app)
         playerScript(app);
         entityMineFloating(app);
         entityType();
+        if (igIsKeyReleased(ImGuiKey_C))
+        {
+            app->graphics.show_collisionbox = !app->graphics.show_collisionbox;
+        }
     }
     pauseGame(app);
     /*

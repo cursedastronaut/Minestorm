@@ -75,7 +75,7 @@ void drawPlayer(App* app)
         { -0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y}
     };
     // checkCollisionPointTriangle(collisionTriangle, (float2){gPlayers[0].x, gPlayers[0].y}, gPlayers[0].angle);
-    checkCollisionSquareSquare(staticSquare, collisionSquare);
+    checkCollisionSquareSquare(staticSquare, collisionSquare, app);
 }
 //Teleports the player
 void playerTeleport(App* app, int p)

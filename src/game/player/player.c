@@ -1,5 +1,6 @@
 #include "player.h"
 #include "../entities/bullet.h"
+#include "../../geo/collision.c"
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
@@ -52,6 +53,28 @@ void drawPlayer(App* app)
     }
     cvAddPoint(gPlayers[0].x, gPlayers[0].y, CV_COL32(255,0,0,255));
     cvAddPoint(gPlayers[1].x, gPlayers[1].y, CV_COL32(0,255,0,255));
+    // float2 collisionTriangle[3] =
+    // {
+    //     { 0.0f, 0.5f },
+    //     { 0.5f, -0.3f },
+    //     { -0.5f, -0.3f }
+    // };
+    float2 staticSquare[4] = 
+    {
+        { 8, -7 },
+        { 11, -7 },
+        { 11, -10 },
+        { 8, -10 }
+    };
+    float2 collisionSquare[4] =
+    {
+        { -0.5f + gPlayers[0].x, 0.5f + gPlayers[0].y},
+        { 0.5f + gPlayers[0].x, 0.5f + gPlayers[0].y},
+        { 0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y},
+        { -0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y}
+    };
+    // checkCollisionPointTriangle(collisionTriangle, (float2){gPlayers[0].x, gPlayers[0].y}, gPlayers[0].angle);
+    checkCollisionSquareSquare(staticSquare, collisionSquare);
 }
 
 void playerTeleport(App* app)

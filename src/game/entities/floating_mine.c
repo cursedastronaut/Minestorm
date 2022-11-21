@@ -2,6 +2,7 @@
 #include "entities.h"
 #include <stdlib.h>
 #include "../tinkering.h"
+#include "../player/player.c"
 struct entMF fmine [MINE_MAX];   //Choosing the amount of mines (see tinkering.h)
 void mineInit()
 {
@@ -71,6 +72,7 @@ void drawMineFloating(entMF currentMine)
         cvPathStroke(CV_COL32_WHITE, 1);
 }
 
+
 void entityMineFloating(App* app)
 {
     //Movement
@@ -80,7 +82,25 @@ void entityMineFloating(App* app)
         {
             drawMineFloating(fmine[i]);
             fmine[i].x += fmine[i].momentumX * app -> deltaTime; //Make it move.
-            fmine[i].y += fmine[i].momentumY * app -> deltaTime;     
+            fmine[i].y += fmine[i].momentumY * app -> deltaTime;
+            float2 mineBox[4] = 
+            {
+                { fmine[i].x + (0.4f * fmine[i].size), fmine[i].y + (0.4f * fmine[i].size)},
+                { fmine[i].x + (0.4f * fmine[i].size), fmine[i].y + (-0.4f * fmine[i].size) },
+                { fmine[i].x + (-0.4f * fmine[i].size), fmine[i].y + (-0.4f * fmine[i].size) },
+                { fmine[i].x + (-0.4f * fmine[i].size), fmine[i].y + (0.4f * fmine[i].size) }
+            };
+            for (int p = 0; p < 2; p++)
+            {
+                float2 collisionSquare[4] =
+                {
+                    { -0.5f + gPlayers[p].x, 0.5f + gPlayers[p].y},
+                    { 0.5f + gPlayers[p].x, 0.5f + gPlayers[p].y},
+                    { 0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y},
+                    { -0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y}
+                };
+                checkCollisionSquareSquare(mineBox, collisionSquare, app);
+            }
         }
         
     }

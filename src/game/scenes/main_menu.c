@@ -43,7 +43,7 @@ void processingMainMenu(App* app)
     }
 
     //Quitte le jeu
-    if (igIsKeyDown(ImGuiKey_Escape))
+    if (igIsKeyPressed(ImGuiKey_Escape, 0))
     {
         app->shutdown = true;
     }

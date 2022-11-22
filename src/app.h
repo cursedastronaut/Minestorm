@@ -12,6 +12,7 @@ typedef struct textures
     CvTexture logo;
     CvTexture window;
     CvTexture controls;
+    CvTexture gameOver;
     CvTexture copyright;
     CvTexture staticE [21];
     int staticA;

@@ -219,6 +219,25 @@ void playerInvincibility(App* app)
     }
 }
 
+void playerGameOver(App* app)
+{
+    for (int i; i < 2; i++)
+    {
+        if (app->twoPlayers == true)
+        {
+
+        }
+        else
+        {
+            if (gPlayers[i].lives <= 0)
+            {
+                app->scene = 3;
+            }
+        } 
+    }
+    
+}
+
 //Checks for input and prepare for movement
 void playerControls(App* app)
 {
@@ -353,6 +372,7 @@ void playerScript(App* app)
     bulletUpdate(app);
     playerOOB(app);
     playerInvincibility(app);
+    playerGameOver(app);
     bulletDebug();
     playerDebug(app);
 }

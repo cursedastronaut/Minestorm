@@ -13,7 +13,7 @@ void gameInit(App* app)
 
 void pauseGame(App* app)
 {
-    if (igIsKeyReleased(ImGuiKey_Space))
+    if (igIsKeyPressed(ImGuiKey_Space, 0))
     {
         app->paused = !app->paused;
     }
@@ -23,8 +23,9 @@ void pauseGame(App* app)
         ImGuiIO* io = igGetIO();
         cvAddText(io->DisplaySize.x/50 / 2 - 0.5, -(io->DisplaySize.y / 50 / 2) + 0.5, CV_COL32_WHITE, "PAUSE");
 
-        if (igIsKeyReleased(ImGuiKey_Escape))
+        if (igIsKeyPressed(ImGuiKey_Escape, 0))
         {
+            playerInit(app);
             app->paused = false;
             app->twoPlayers = false;
             app->scene = 0;
@@ -46,7 +47,7 @@ void processingGame(App* app)
         playerScript(app);
         entityMineFloating(app);
         entityType();
-        if (igIsKeyReleased(ImGuiKey_C))
+        if (igIsKeyPressed(ImGuiKey_C, 0))
         {
             app->graphics.show_collisionbox = !app->graphics.show_collisionbox;
         }

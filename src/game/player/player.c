@@ -55,10 +55,10 @@ bool drawPlayer(App* app)
     {
         if (gPlayers[j].invincibility > 0)
         {
-            if (app->animtime % 4 == 0)
-            {}
-            else
+            if (app->animtime % 6 == 0)
             {return true;}
+            else
+            {}
         }
         for (int i = 0; i < 6; ++i) // Looping through the points making the shape.
         {

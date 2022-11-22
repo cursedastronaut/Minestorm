@@ -8,7 +8,7 @@
 
 typedef struct entMF
 {
-    float type;         //Type of mine
+    int type;         //Type of mine
     float x;            //Mine's X position
     float y;            //Mine's Y position
     float angle;        //Mine's angle

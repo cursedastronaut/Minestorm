@@ -23,7 +23,6 @@ void killMineFloating(int index)
 {
     if (fmine[index].size == 1)
     {
-        printf("ya");
         fmine[index].isActive == false;
     }
     else
@@ -90,7 +89,7 @@ void entityMineFloating(App* app)
                 { fmine[i].x + (-0.4f * fmine[i].size), fmine[i].y + (-0.4f * fmine[i].size) },
                 { fmine[i].x + (-0.4f * fmine[i].size), fmine[i].y + (0.4f * fmine[i].size) }
             };
-            for (int p = 0; p < 2; p++)
+            /*for (int p = 0; p < 2; p++)
             {
                 float2 collisionSquare[4] =
                 {
@@ -99,8 +98,33 @@ void entityMineFloating(App* app)
                     { 0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y},
                     { -0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y}
                 };
-                checkCollisionSquareSquare(mineBox, collisionSquare, app);
+                if (checkCollisionSquareSquare(mineBox, collisionSquare, app))
+                {
+                    //killPlayer();
+                }
+            }*/
+            for (int b = 0; b < MAX_BULLET_COUNT; b++)
+            {
+                if (gBullets[b].isActive == true)
+                {
+                    float2 bulletSquare[4] =
+                    {
+                        { -0.2f + gBullets[b].x, 0.2f + gBullets[b].y},
+                        { 0.2f + gBullets[b].x, 0.2f + gBullets[b].y},
+                        { 0.2f + gBullets[b].x, -0.2f + gBullets[b].y},
+                        { -0.2f + gBullets[b].x, -0.2f + gBullets[b].y}
+                    };
+                    if (checkCollisionSquareSquare(mineBox, bulletSquare, app))
+                    {
+                        killMineFloating(i);
+                        gBullets[b].timeBeforeDeath = BULLET_LIFE_TIME;
+                        gBullets[b].isActive = 0;                       //Killing the bullet.
+                        gPlayers[gBullets[b].player].score ++;
+                    }   
+                }
+                
             }
+                
         }
         
     }

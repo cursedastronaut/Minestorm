@@ -7,7 +7,7 @@
 
 //MINE TINKERING
 #define MINE_MAX 100         //Max Mines on screen
-#define MINE_AMOUNT_INITIAL 2   //Number of mines to initially spawn
+#define MINE_AMOUNT_INITIAL 30   //Number of mines to initially spawn
 
 
 

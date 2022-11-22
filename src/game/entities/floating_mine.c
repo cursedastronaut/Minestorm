@@ -89,20 +89,24 @@ void entityMineFloating(App* app)
                 { fmine[i].x + (-0.4f * fmine[i].size), fmine[i].y + (-0.4f * fmine[i].size) },
                 { fmine[i].x + (-0.4f * fmine[i].size), fmine[i].y + (0.4f * fmine[i].size) }
             };
-            /*for (int p = 0; p < 2; p++)
+            for (int p = 0; p < 2; p++)
             {
-                float2 collisionSquare[4] =
+                if (gPlayers[p].invincibility <= 0)
                 {
-                    { -0.5f + gPlayers[p].x, 0.5f + gPlayers[p].y},
-                    { 0.5f + gPlayers[p].x, 0.5f + gPlayers[p].y},
-                    { 0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y},
-                    { -0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y}
-                };
-                if (checkCollisionSquareSquare(mineBox, collisionSquare, app))
-                {
-                    //killPlayer();
+                    float2 collisionSquare[4] =
+                    {
+                        { -0.5f + gPlayers[p].x, 0.5f + gPlayers[p].y},
+                        { 0.5f + gPlayers[p].x, 0.5f + gPlayers[p].y},
+                        { 0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y},
+                        { -0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y}
+                    };
+                    if (checkCollisionSquareSquare(mineBox, collisionSquare, app))
+                    {
+                        killPlayer(p);
+                    }
                 }
-            }*/
+                
+            }
             for (int b = 0; b < MAX_BULLET_COUNT; b++)
             {
                 if (gBullets[b].isActive == true)

@@ -213,11 +213,11 @@ void playerControls(App* app)
             gPlayers[0].momentumY += (cos(-gPlayers[0].angle) * 0.25f);
         }
 
-        if (igIsKeyReleased(ImGuiKey_T) || igIsKeyReleased(ImGuiKey_E))
+        if (igIsKeyPressed(ImGuiKey_T, 0) || igIsKeyPressed(ImGuiKey_E, 0))
         {
             playerTeleport(app,0);
         }
-        if (igIsKeyReleased(ImGuiKey_F))
+        if (igIsKeyPressed(ImGuiKey_F, 0))
         {
             fireBullet(0);
         }

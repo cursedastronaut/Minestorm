@@ -17,7 +17,7 @@ void displayMainMenu(App* app)
         cvAddTexture((io->DisplaySize.x/50) / 2,    - (io->DisplaySize.y/50)/2, app->graphics.textures.controls);
     
     
-    if (igIsKeyReleased(ImGuiKey_C))
+    if (igIsKeyPressed(ImGuiKey_C, 0))
         app->sceneMainMenu.show_controls = !app->sceneMainMenu.show_controls;
 }
 
@@ -27,7 +27,7 @@ void displayMainMenu(App* app)
 void processingMainMenu(App* app)
 {
     //Lance une partie solo
-    if (igIsKeyReleased(ImGuiKey_F))
+    if (igIsKeyPressed(ImGuiKey_F, 0))
     {
         app->twoPlayers = false;
         app->scene = 1;
@@ -35,7 +35,7 @@ void processingMainMenu(App* app)
     }
 
     //Lance une partie deux joueurs
-    if (igIsKeyReleased(ImGuiKey_K))
+    if (igIsKeyPressed(ImGuiKey_K, 0))
     {
         app->twoPlayers = true;
         app->scene = 1;
@@ -48,7 +48,7 @@ void processingMainMenu(App* app)
         app->shutdown = true;
     }
 
-    if (igIsKeyReleased(ImGuiKey_V))
+    if (igIsKeyPressed(ImGuiKey_V, 0))
     {
         app->graphics.show_static = !app->graphics.show_static;
     }

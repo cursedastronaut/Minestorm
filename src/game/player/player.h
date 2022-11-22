@@ -9,4 +9,5 @@ typedef struct Player
     float momentumY;
     int score;
     int lives;
+    float invincibility;
 } Player;

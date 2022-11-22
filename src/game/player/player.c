@@ -36,10 +36,12 @@ void playerInit(App* app)
         gPlayers[i].lives = 3;
         gPlayers[i].momentumX = 0;
         gPlayers[i].momentumY = 0;
+        gPlayers[i].angle = 0;
+        gPlayers[i].invincibility = 5.0f;
     }
 }
 //Draws the player to the screen
-void drawPlayer(App* app)
+bool drawPlayer(App* app)
 {
     float2 points[6] = { //Shape
         { 0.0f, 0.5f },
@@ -51,6 +53,13 @@ void drawPlayer(App* app)
     };
     for (int j = 0; j < 2; j++) //Looping through the players. j is the player index variable.
     {
+        if (gPlayers[j].invincibility > 0)
+        {
+            if (app->animtime % 4 == 0)
+            {}
+            else
+            {return true;}
+        }
         for (int i = 0; i < 6; ++i) // Looping through the points making the shape.
         {
             float2 newPoint = points[i];
@@ -79,7 +88,6 @@ void drawPlayer(App* app)
         { 0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y},
         { -0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y}
     };
-    checkCollisionSquareSquare(staticSquare, collisionSquare, app);
 }
 //Teleports the player
 void playerTeleport(App* app, int p)
@@ -194,6 +202,22 @@ void bulletDebug()
     igText("Drawn Bullets: %d | Max: %d", bulletCount, MAX_BULLET_COUNT);
 }
 
+void killPlayer(int index)
+{
+    gPlayers[index].invincibility = 5.0;
+    gPlayers[index].lives--;
+}
+
+void playerInvincibility(App* app)
+{
+    for (int index = 0; index < 2; index++)
+    {
+        if (gPlayers[index].invincibility > 0.0f)
+        {
+            gPlayers[index].invincibility -= app->deltaTime;
+        }
+    }
+}
 
 //Checks for input and prepare for movement
 void playerControls(App* app)
@@ -315,6 +339,7 @@ void playerDebug(App* app)
         igText("   Momentum Y: %f", gPlayers[i].momentumY);
         igText("   Speed: %f", sqrt(pow(gPlayers[i].momentumX, 2.0f) + pow(gPlayers[i].momentumY, 2.0f)));
         igText("   Angle: %f", gPlayers[i].angle);
+        igText("   Inv.Time : %f", gPlayers[i].invincibility);
         igText("----------");
     }
 }
@@ -327,6 +352,7 @@ void playerScript(App* app)
     playerMovement(app);
     bulletUpdate(app);
     playerOOB(app);
+    playerInvincibility(app);
     bulletDebug();
     playerDebug(app);
 }

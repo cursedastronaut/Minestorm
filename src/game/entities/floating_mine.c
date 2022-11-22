@@ -4,6 +4,7 @@
 #include "../tinkering.h"
 #include "../player/player.c"
 struct entMF fmine [MINE_MAX];   //Choosing the amount of mines (see tinkering.h)
+int level = 7;
 void mineInit()
 {
     ImGuiIO* io = igGetIO();
@@ -12,6 +13,7 @@ void mineInit()
         fmine[i].angle = rand() % 360;                                  //Sets a random angle
         fmine[i].angle *= PI/180;                                  //Sets a random angle
         fmine[i].size = 3;
+        fmine[i].type = floor(fmin(i * level * 0.1f, 4)); 
         fmine[i].x = rand() % ((int)igGetIO()->DisplaySize.x / 50);     //Sets a random position on the X axis (within the window's limits)
         fmine[i].y = -rand() % ((int)igGetIO()->DisplaySize.y / 50);    //Sets a random position on the Y axis (within the window's limits)
         fmine[i].momentumX = cosf(fmine[i].angle) * 0.1;                //Sets the momentum variables so that it goes
@@ -34,6 +36,7 @@ void killMineFloating(int index)
             {
                 fmine[i].angle = fmine[index].angle;
                 fmine[i].size = fmine[index].size;
+                fmine[i].type = fmine[index].type;
                 fmine[i].x = fmine[index].x - 0.3;
                 fmine[i].y = fmine[index].y - 0.3;
                 fmine[i].momentumX = cosf(fmine[i].angle) * 0.1;                //Sets the momentum variables so that it goes
@@ -50,17 +53,60 @@ void killMineFloating(int index)
 void drawMineFloating(entMF currentMine)
 {
     //Shape
-    float2 points[6] = {
+    int verticeAmount = 8;
+    float2 pointsFloat[6] = {
         { 0.1f * cosf(PI / 2), 0.1f * sinf(PI / 2)},            
-        { 0.5f * cosf(PI / 6), 0.5f * sinf(PI / 6)},
+        { 0.3f * cosf(PI / 6), 0.3f * sinf(PI / 6)},
         { 0.1f * cosf(-PI / 6), 0.1f * sinf(-PI / 6)},
-        { 0.5f * cosf(-PI / 2), 0.5f * sinf(-PI / 2)},
+        { 0.3f * cosf(-PI / 2), 0.3f * sinf(-PI / 2)},
         { 0.1f * cosf(-5 * PI / 6), 0.1f * sinf(-5 * PI / 6)},
-        { 0.5f * cosf((5 * PI) / 6), 0.5f * sinf((5 * PI) / 6)}
+        { 0.3f * cosf((5 * PI) / 6), 0.3f * sinf((5 * PI) / 6)}
     };
-        for (int j = 0; j < 6; ++j)     //Looping through the points
+    float2 pointsFire[8] = {
+        { 0.15f * cosf(PI / 2), 0.15f * sinf(PI / 2)},
+        { 0.3f * cosf(PI / 4), 0.3f * sinf(PI / 4)},
+        { 0.15f * cosf(0), 0.15f * sinf(0)},
+        { 0.3f * cosf(PI / 4), 0.3f * -sinf(PI / 4)},
+        { 0.15f * cosf(PI / 2), 0.15f * -sinf(PI / 2)},
+        { 0.3f * -cosf(PI / 4), 0.3f * -sinf(PI / 4)},
+        { 0.15f * cosf(PI), 0.15f * sinf(PI)},
+        { 0.3f * -cosf(PI / 4), 0.3f * sinf(PI / 4)}
+    };
+    float2 pointsMagnetic[8] = {
+        { 0.1f * cosf(PI / 2), 0.1f * sinf(PI / 2)},
+        { 0.25f * cosf(PI / 4), 0.25f * sinf(PI / 4)},
+        { 0.1f * cosf(0), 0.1f * sinf(0)},
+        { 0.25f * cosf(PI / 4), 0.25f * -sinf(PI / 4)},
+        { 0.1f * cosf(PI / 2), 0.1f * -sinf(PI / 2)},
+        { 0.25f * -cosf(PI / 4), 0.25f * -sinf(PI / 4)},
+        { 0.1f * cosf(PI), 0.1f * sinf(PI)},
+        { 0.25f * -cosf(PI / 4), 0.25f * sinf(PI / 4)}
+    };
+    float2 pointsFiremag[8] = {
+        { 0.3f * cosf(PI / 2), 0.3f * sinf(PI / 2)},
+        { 0.2f * cosf(PI / 2), 0.2f * sinf(PI / 2)},
+        { 0.3f * cosf(0), 0.3f * sinf(0)},
+        { 0.2f * cosf(0), 0.2f * sinf(0)},
+        { 0.3f * cosf(PI / 2), 0.3f * -sinf(PI / 2)},
+        { 0.2f * cosf(PI / 2), 0.2f * -sinf(PI / 2)},
+        { 0.3f * cosf(PI), 0.3f * sinf(PI)},
+        { 0.2f * cosf(PI), 0.2f * sinf(PI)}
+    };
+        for (int j = 0; j < verticeAmount; ++j)     //Looping through the points
         {
-            float2 newPoint = points[j];
+            float2 newPoint;
+            switch (currentMine.type)
+            {
+                case 0: newPoint = pointsFloat[j];
+                verticeAmount = 6;
+                break;
+                case 1: newPoint = pointsFire[j];
+                break;
+                case 2: newPoint = pointsMagnetic[j];
+                break;
+                case 3: newPoint = pointsFiremag[j];
+                break;
+            }
             newPoint.x *= currentMine.size;
             newPoint.y *= currentMine.size;
             newPoint.x += currentMine.x;
@@ -80,11 +126,11 @@ void entityMineFloating(App* app)
         if (fmine[i].isActive == true)
         {
             drawMineFloating(fmine[i]);
-            fmine[i].x += fmine[i].momentumX * app -> deltaTime; //Make it move.
-            fmine[i].y += fmine[i].momentumY * app -> deltaTime;
+            fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size) * 3; //Make it move.
+            fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 3;
             float2 mineBox[4] = 
             {
-                { fmine[i].x + (0.4f * fmine[i].size), fmine[i].y + (0.4f * fmine[i].size)},
+                { fmine[i].x + (0.4f * fmine[i].size), fmine[i].y + (0.4f * fmine[i].size) },
                 { fmine[i].x + (0.4f * fmine[i].size), fmine[i].y + (-0.4f * fmine[i].size) },
                 { fmine[i].x + (-0.4f * fmine[i].size), fmine[i].y + (-0.4f * fmine[i].size) },
                 { fmine[i].x + (-0.4f * fmine[i].size), fmine[i].y + (0.4f * fmine[i].size) }
@@ -111,6 +157,14 @@ void entityMineFloating(App* app)
             {
                 if (gBullets[b].isActive == true)
                 {
+                    int specialBonus;
+                    switch (fmine[i].type)
+                    {
+                        case 0: specialBonus = 0; break;
+                        case 1: specialBonus = 225; break;
+                        case 2: specialBonus = 400; break;
+                        case 3: specialBonus = 650; break;
+                    }
                     float2 bulletSquare[4] =
                     {
                         { -0.2f + gBullets[b].x, 0.2f + gBullets[b].y},
@@ -120,10 +174,16 @@ void entityMineFloating(App* app)
                     };
                     if (checkCollisionSquareSquare(mineBox, bulletSquare, app))
                     {
-                        killMineFloating(i);
                         gBullets[b].timeBeforeDeath = BULLET_LIFE_TIME;
                         gBullets[b].isActive = 0;                       //Killing the bullet.
-                        gPlayers[gBullets[b].player].score ++;
+                        switch(fmine[i].size)
+                        {
+                            case 1: gPlayers[gBullets[b].player].score += 200; break;
+                            case 2: gPlayers[gBullets[b].player].score += 135; break;
+                            case 3: gPlayers[gBullets[b].player].score += 100; break;
+                        }
+                        gPlayers[gBullets[b].player].score += specialBonus;
+                        killMineFloating(i);
                     }   
                 }
                 

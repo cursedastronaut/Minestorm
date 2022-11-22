@@ -6,6 +6,8 @@ void displayGameOver(App* app)
     if (igIsKeyPressed(ImGuiKey_Escape, 0))
     {
         playerInit(app);
+        app->paused = false;
+        app->twoPlayers = false;
         app->scene = 0;
     }
 

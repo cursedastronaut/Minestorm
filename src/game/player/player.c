@@ -93,6 +93,7 @@ bool drawPlayer(App* app)
 void playerTeleport(App* app, int p)
 {
     ImGuiIO* io = igGetIO();
+    gPlayers[p].invincibility = 2.0f;
     gPlayers[p].x = rand() % ((int) io->DisplaySize.x / 50);  //Moves the player with the index p to a
     gPlayers[p].y = -rand() % ((int) io->DisplaySize.y / 50); //random X and Y position within window limits.
 }
@@ -221,27 +222,37 @@ void playerInvincibility(App* app)
 
 void playerGameOver(App* app)
 {
-    for (int i; i < 2; i++)
+    if (app->twoPlayers == true)
     {
-        if (app->twoPlayers == true)
+        if (gPlayers[0].lives <= 0 && gPlayers[1].lives <= 0)
         {
-
+            app->scene = 3;
         }
-        else
-        {
-            if (gPlayers[i].lives <= 0)
+        for (int i = 0; i < 2; i ++)
+            if (gPlayers[i].lives == 0)
             {
-                app->scene = 3;
+                gPlayers[i].x = -5; 
+                gPlayers[i].y = -5;
             }
-        } 
+                
     }
+
+
+    else
+    {
+        if (gPlayers[0].lives <= 0)
+        {
+            app->scene = 3;
+        }
+    } 
     
 }
 
 //Checks for input and prepare for movement
 void playerControls(App* app)
 {
-    //PLAYER 1
+    if (gPlayers[0].lives != 0)
+    {
         if (igIsKeyDown(ImGuiKey_D) || igIsKeyDown(ImGuiKey_LeftArrow))
         {
             gPlayers[0].angle += (480.0f * PI / 360.0f) * app->deltaTime;
@@ -264,31 +275,35 @@ void playerControls(App* app)
         {
             fireBullet(0);
         }
+    }
     
     //PLAYER 2
     if (app->twoPlayers == true)
     {
-        if (igIsKeyDown(ImGuiKey_Keypad4) || igIsKeyDown(ImGuiKey_J))
+        if (gPlayers[1].lives != 0)
         {
-            gPlayers[1].angle += (480.0f * PI / 360.0f) * app->deltaTime;
-        }
-        if (igIsKeyDown(ImGuiKey_Keypad6) ||igIsKeyDown(ImGuiKey_L))
-        {
-            gPlayers[1].angle -= (480.0f * PI / 360.0f) * app->deltaTime;
-        }
-        if (igIsKeyDown(ImGuiKey_Keypad8) || igIsKeyDown(ImGuiKey_I))
-        {   
-            gPlayers[1].momentumX += (sin(-gPlayers[1].angle) * 0.25f);
-            gPlayers[1].momentumY += (cos(-gPlayers[1].angle) * 0.25f);
-        }
-        
-        if (igIsKeyReleased(ImGuiKey_K))
-        {
-            playerTeleport(app,1);
-        }
-        if (igIsKeyReleased(ImGuiKey_U) || igIsKeyReleased(ImGuiKey_O))
-        {
-            fireBullet(1);
+            if (igIsKeyDown(ImGuiKey_Keypad4) || igIsKeyDown(ImGuiKey_J))
+            {
+                gPlayers[1].angle += (480.0f * PI / 360.0f) * app->deltaTime;
+            }
+            if (igIsKeyDown(ImGuiKey_Keypad6) ||igIsKeyDown(ImGuiKey_L))
+            {
+                gPlayers[1].angle -= (480.0f * PI / 360.0f) * app->deltaTime;
+            }
+            if (igIsKeyDown(ImGuiKey_Keypad8) || igIsKeyDown(ImGuiKey_I))
+            {   
+                gPlayers[1].momentumX += (sin(-gPlayers[1].angle) * 0.25f);
+                gPlayers[1].momentumY += (cos(-gPlayers[1].angle) * 0.25f);
+            }
+            
+            if (igIsKeyPressed(ImGuiKey_K, 0))
+            {
+                playerTeleport(app,1);
+            }
+            if (igIsKeyPressed(ImGuiKey_U, 0) || igIsKeyPressed(ImGuiKey_O, 0))
+            {
+                fireBullet(1);
+            }
         }
     }
 
@@ -333,15 +348,19 @@ void playerOOB(App* app)
     //Out of borders
     for (int i = 0; i < 2; i++)
     {
-        if (gPlayers[i].x > io->DisplaySize.x / 50 + 1)
-            gPlayers[i].x = -0.5;
-        if (gPlayers[i].x < -1)
-            gPlayers[i].x = io->DisplaySize.x / 50 + 0.5;
+        if (gPlayers[i].lives != 0)
+        {
+            if (gPlayers[i].x > io->DisplaySize.x / 50 + 1)
+                gPlayers[i].x = -0.5;
+            if (gPlayers[i].x < -1)
+                gPlayers[i].x = io->DisplaySize.x / 50 + 0.5;
 
-        if (gPlayers[i].y < -io->DisplaySize.y / 50 - 2 )
-            gPlayers[i].y = 0.5;
-        if (gPlayers[i].y > 1)
-            gPlayers[i].y = -io->DisplaySize.y / 50 - 0.5;
+            if (gPlayers[i].y < -io->DisplaySize.y / 50 - 2 )
+                gPlayers[i].y = 0.5;
+            if (gPlayers[i].y > 1)
+                gPlayers[i].y = -io->DisplaySize.y / 50 - 0.5;
+        }
+        
     }
 }
 //Displays debug informations

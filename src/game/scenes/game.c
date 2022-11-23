@@ -1,6 +1,6 @@
 #include "../hud/hud.h"
 //#include "../player/player.c"
-#include "../entities/floating_mine.c"
+#include "../entities/mine.c"
 
 void gameInit(App* app)
 {
@@ -39,6 +39,7 @@ void displayGame(App* app)
 {
     drawHUDScore(app);
     drawHUDLivesLeft(app);
+    drawHUDLevel(app);
 }
 
 void processingGame(App* app)
@@ -46,7 +47,7 @@ void processingGame(App* app)
     if (app->paused != true)
     {
         playerScript(app);
-        entityMineFloating(app);
+        entityMineUpdate(app);
         entityType();
         if (igIsKeyPressed(ImGuiKey_C, 0))
         {

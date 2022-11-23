@@ -3,8 +3,8 @@
 #include "magnetic_fireball_mine.c"
 #include "magnetic_mine.c"
 #include "floating_mine.c"
+#include "fireball.c"
 #include "entity_type.c"
-#include "mine.c"
 
 typedef struct entMF
 {
@@ -18,5 +18,5 @@ typedef struct entMF
     bool isActive;
 } entMF;
 
-void entityMineFloating();
+void entityMineUpdate();
 void entityType();

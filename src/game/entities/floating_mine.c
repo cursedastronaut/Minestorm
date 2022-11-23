@@ -252,5 +252,4 @@ void entityMineFloating(App* app)
 //To do:
 /*
 Make the magnetic mine go to the nearest player
-Make it detect when all the mines are dead
 */

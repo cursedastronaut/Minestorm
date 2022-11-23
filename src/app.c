@@ -19,8 +19,9 @@ void appInit(App* app)
     app->graphics.textures.logo = cvLoadTexture("assets/minestorm-original.png");   //Loading the logo
     app->graphics.textures.window = cvLoadTexture("assets/window.png");             //Loading the menu window
     app->graphics.textures.controls = cvLoadTexture("assets/controls.png");         //Loads controls window
-    app->graphics.textures.gameOver = cvLoadTexture("assets/game_over.png");         //Loads controls window
-    app->graphics.textures.copyright = cvLoadTexture("assets/copyright.png");         //Loads copyright text
+    app->graphics.textures.gameOver = cvLoadTexture("assets/game_over.png");        //Loads controls window
+    app->graphics.textures.copyright = cvLoadTexture("assets/copyright.png");       //Loads copyright text
+    app->graphics.textures.forcefield = cvLoadTexture("assets/forcefield.png");     //Loads forcefield texture
     app->graphics.show_static = false;
     app->sceneMainMenu.show_controls = false;
     /*playerInit(app);*/

@@ -55,6 +55,7 @@ bool drawPlayer(App* app)
     {
         if (gPlayers[j].invincibility > 0)
         {
+            cvAddTexture(gPlayers[j].x, gPlayers[j].y,  app->graphics.textures.forcefield);
             if (app->animtime % 6 == 0)
             {return true;}
             else
@@ -74,13 +75,7 @@ bool drawPlayer(App* app)
     }
     cvAddPoint(gPlayers[0].x, gPlayers[0].y, CV_COL32(255,0,0,255));
     cvAddPoint(gPlayers[1].x, gPlayers[1].y, CV_COL32(0,255,0,255));
-    float2 staticSquare[4] = 
-    {
-        { 8, -7 },
-        { 11, -7 },
-        { 11, -10 },
-        { 8, -10 }
-    };
+
     float2 collisionSquare[4] =
     {
         { -0.5f + gPlayers[0].x, 0.5f + gPlayers[0].y},
@@ -269,7 +264,7 @@ void playerGameOver(App* app)
                 fclose(save1);
             }
             app->scene = 3;
-            ma_engine_play_sound(&app->engine, "assets/audio/game_over.mp3", NULL);
+            ma_engine_play_sound(&app->engine, "assets/audio/game-over.mp3", NULL);
         }
     } 
     
@@ -331,7 +326,7 @@ void playerControls(App* app)
             if (igIsKeyPressed(ImGuiKey_U, 0) || igIsKeyPressed(ImGuiKey_O, 0))
             {
                 fireBullet(1);
-                //ma_engine_play_sound(&app->engine, "assets/audio/shooting.mp3", NULL);
+                ma_engine_play_sound(&app->engine, "assets/audio/shooting.mp3", NULL);
             }
         }
     }

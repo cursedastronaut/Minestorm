@@ -129,7 +129,11 @@ void checkMinesIntegrity()
         integrity += fmine[i].isActive;
     }
     if (integrity == 0)
-        cvAddText(3,-3, CV_COL32_WHITE , "YAAAAAAAAAAAAA");
+    {
+        level++;
+        mineInit();
+    }
+        
 }
 
 void entityMineFloating(App* app)
@@ -252,4 +256,5 @@ void entityMineFloating(App* app)
 //To do:
 /*
 Make the magnetic mine go to the nearest player
+Draw the level number
 */

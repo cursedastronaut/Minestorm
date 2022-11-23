@@ -13,7 +13,8 @@ void mineInit()
         fmine[i].angle = rand() % 360;                                  //Sets a random angle
         fmine[i].angle *= PI/180;                                  //Sets a random angle
         fmine[i].size = 3;
-        fmine[i].type = floor(fmin(i * level * 0.1f, 4)); 
+        // fmine[i].type = floor(fmin(i * level * 0.1f, 4));
+        fmine[i].type = 1;
         fmine[i].x = rand() % ((int)igGetIO()->DisplaySize.x / 50);     //Sets a random position on the X axis (within the window's limits)
         fmine[i].y = -rand() % ((int)igGetIO()->DisplaySize.y / 50);    //Sets a random position on the Y axis (within the window's limits)
         fmine[i].momentumX = cosf(fmine[i].angle) * 0.1;                //Sets the momentum variables so that it goes
@@ -25,7 +26,7 @@ void killMineFloating(int index)
 {
     if (fmine[index].size == 1)
     {
-        fmine[index].isActive == false;
+        fmine[index].isActive = false;
     }
     else
     {
@@ -92,6 +93,8 @@ void drawMineFloating(entMF currentMine)
         { 0.3f * cosf(PI), 0.3f * sinf(PI)},
         { 0.2f * cosf(PI), 0.2f * sinf(PI)}
     };
+    if (currentMine.isActive == true)
+    {
         for (int j = 0; j < verticeAmount; ++j)     //Looping through the points
         {
             float2 newPoint;
@@ -115,6 +118,7 @@ void drawMineFloating(entMF currentMine)
             cvPathLineTo(newPoint.x, newPoint.y); 
         }
         cvPathStroke(CV_COL32_WHITE, 1);
+    }
 }
 
 
@@ -126,8 +130,33 @@ void entityMineFloating(App* app)
         if (fmine[i].isActive == true)
         {
             drawMineFloating(fmine[i]);
-            fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size) * 3; //Make it move.
-            fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 3;
+            switch (fmine[i].type)
+            {
+            case 0 ... 1: //Floating Mine && Fireball Mine
+                fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size) * 3; //Make it move.
+                fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 3;
+                break;
+            
+            case 3 ... 4: //Magnetic Mine, Magnetic-Fireball Mine
+                int tempX;  int tempY;
+                tempX = gPlayers[0].x - fmine[i].x;
+                tempY = gPlayers[0].y - fmine[i].y;
+                fmine[i].momentumX += tempX * 0.01;
+                fmine[i].momentumY += tempY * 0.01;
+                fmine[i].momentumY *= 0.97;
+                fmine[i].momentumX *= 0.97;
+                fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size) * 0.98; //Make it move.
+                fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 0.98;
+
+                break;
+
+            default:
+                break;
+            }
+            
+            
+            
+            
             float2 mineBox[4] = 
             {
                 { fmine[i].x + (0.4f * fmine[i].size), fmine[i].y + (0.4f * fmine[i].size) },

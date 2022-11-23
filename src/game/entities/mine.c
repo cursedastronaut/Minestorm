@@ -4,7 +4,34 @@
 #include "../tinkering.h"
 #include "../player/player.c"
 struct entMF fmine [MINE_MAX];   //Choosing the amount of mines (see tinkering.h)
-int level = 7;
+int level = 1;
+int chanceMineFloating = 100;
+int chanceMineFireball = 0;
+int chanceMineMagnetic = -20;
+int chanceMineFiremag  = -40;
+
+int mineGeneration(int i)
+{
+    int temp = 0;
+    temp = rand() % 100;
+    if (temp > chanceMineFloating - 100 && temp <= chanceMineFloating)
+    {
+        return 0;
+    }
+    else if (temp > chanceMineFireball - 20 && temp <= chanceMineFireball)
+    {
+        return 1;
+    }
+    else if (temp > chanceMineMagnetic - 20 && temp <= chanceMineMagnetic)
+    {
+        return 2;
+    }
+    else if (temp > chanceMineFiremag - 20 && temp <= chanceMineFiremag)
+    {
+        return 3;
+    }
+}
+
 void mineInit()
 {
     ImGuiIO* io = igGetIO();
@@ -13,7 +40,9 @@ void mineInit()
         fmine[i].angle = rand() % 360;                                  //Sets a random angle
         fmine[i].angle *= PI/180;                                  //Sets a random angle
         fmine[i].size = 3;
-        fmine[i].type = 1;
+        
+        fmine[i].type = mineGeneration(i);
+
         fmine[i].x = rand() % ((int)igGetIO()->DisplaySize.x / 50);     //Sets a random position on the X axis (within the window's limits)
         fmine[i].y = -rand() % ((int)igGetIO()->DisplaySize.y / 50);    //Sets a random position on the Y axis (within the window's limits)
         fmine[i].momentumX = cosf(fmine[i].angle) * 0.1;                //Sets the momentum variables so that it goes
@@ -128,6 +157,14 @@ void checkMinesIntegrity()
     if (integrity == 0)
     {
         level++;
+        if (level < 6)
+        {
+            chanceMineFloating += 20;
+            chanceMineFireball += 20;
+            chanceMineMagnetic += 20;
+            chanceMineFiremag  += 20;
+        }
+        
         mineInit();
     }
         
@@ -267,10 +304,14 @@ void entityMineUpdate(App* app)
         }
     }
     checkMinesIntegrity();
+    if (igIsKeyPressed(ImGuiKey_M, 0))
+    {
+        for (int i = 0; i < MINE_MAX; i++)
+            fmine[i].isActive = false;
+    }
 }
 
 //To do:
 /*
 Make the magnetic mine go to the nearest player
-Draw the level number
 */

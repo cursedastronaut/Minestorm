@@ -29,6 +29,11 @@ void pauseGame(App* app)
             app->paused = false;
             app->twoPlayers = false;
             app->scene = 0;
+            chanceMineFloating = 100;
+            chanceMineFireball = 0;
+            chanceMineMagnetic = -20;
+            chanceMineFiremag  = -40;
+            level = 0;
             app->gameinit = false;
         }
     }

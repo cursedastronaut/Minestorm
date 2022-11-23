@@ -1,9 +1,9 @@
 #pragma once
-#include "fireball_mine.c"
-#include "magnetic_fireball_mine.c"
-#include "magnetic_mine.c"
-#include "floating_mine.c"
-#include "fireball.c"
+#include "shape/fireball_mine.c"
+#include "shape/magnetic_fireball_mine.c"
+#include "shape/magnetic_mine.c"
+#include "shape/floating_mine.c"
+#include "shape/fireball.c"
 #include "entity_type.c"
 
 typedef struct entMF

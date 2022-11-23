@@ -167,6 +167,16 @@ void drawMineFloating(entMF currentMine)
     }
 }
 
+void checkMinesIntegrity()
+{
+    int integrity = 0;
+    for (int i = 0; i < MINE_MAX; i++)
+    {
+        integrity += fmine[i].isActive;
+    }
+    if (integrity == 0)
+        cvAddText(3,-3, CV_COL32_WHITE , "YAAAAAAAAAAAAA");
+}
 
 void entityMineFloating(App* app)
 {
@@ -290,6 +300,7 @@ void entityMineFloating(App* app)
         }
         
     }
+    checkMinesIntegrity();
     //DEBUG
     if (igIsKeyReleased(ImGuiKey_M))
     {
@@ -297,3 +308,7 @@ void entityMineFloating(App* app)
     }
 }
 
+//To do:
+/*
+Make the magnetic mine go to the nearest player
+*/

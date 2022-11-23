@@ -226,7 +226,7 @@ void mineCollision(int i, App* app)
             };
             if (checkCollisionSquareSquare(mineBox, collisionSquare, app))
             {
-                killPlayer(p);
+                killPlayer(p, app);
             }
         }
         
@@ -256,6 +256,7 @@ void mineCollision(int i, App* app)
             };
             if (checkCollisionSquareSquare(mineBox, bulletSquare, app))
             {
+                ma_engine_play_sound(&app->engine, "assets/audio/mine-death.mp3", NULL);
                 gBullets[b].timeBeforeDeath = BULLET_LIFE_TIME;
                 gBullets[b].isActive = 0;                       //Killing the bullet.
                 switch(fmine[i].size)

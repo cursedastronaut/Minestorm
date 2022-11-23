@@ -10,6 +10,10 @@
 
 void appInit(App* app)
 {
+    //Miniaudio init
+
+    ma_engine_init(NULL, &app->engine);
+    //ma_engine_play_sound(&app->engine, "assets/Southern.mp3", NULL);
     app->paused = false;
     srand(time(NULL));      //Initial srand
     app->graphics.textures.logo = cvLoadTexture("assets/minestorm-original.png");   //Loading the logo

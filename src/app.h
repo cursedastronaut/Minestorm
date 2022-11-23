@@ -1,5 +1,7 @@
 #pragma once
 #include <stdbool.h>
+#include "audio.h"
+#include <miniaudio.h>
 
 typedef struct float2
 {
@@ -48,6 +50,8 @@ typedef struct App
 
     int animtime;
     bool gameinit;
+    ma_result result;
+    ma_engine engine;
     int bestScoreSingleplayer;
     int bestScoreMultiplayer[2];
 } App;

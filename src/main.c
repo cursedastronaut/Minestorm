@@ -7,6 +7,13 @@
 
 #include "app.h"
 
+void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
+{
+    // In playback mode copy data to pOutput. In capture mode read data from pInput. In full-duplex mode, both
+    // pOutput and pInput will be valid and you can move data from pInput into pOutput. Never process more than
+    // frameCount frames.
+}
+
 int main()
 {
     // Init glfw
@@ -28,6 +35,8 @@ int main()
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
     }
+    
+
 
     // Init canvas library
     CanvasConfig config = cvGetDefaultConfig();
@@ -55,6 +64,7 @@ int main()
 
     // Shutdown
     appShutdown(&app);
+    ma_engine_uninit(&app.engine);
     cvShutdown();
     glfwDestroyWindow(window);
     glfwTerminate();

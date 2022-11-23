@@ -203,8 +203,9 @@ void bulletDebug()
     igText("Drawn Bullets: %d | Max: %d", bulletCount, MAX_BULLET_COUNT);
 }
 
-void killPlayer(int index)
+void killPlayer(int index, App* app)
 {
+    ma_engine_play_sound(&app->engine, "assets/audio/death.mp3", NULL);
     gPlayers[index].invincibility = 5.0;
     gPlayers[index].lives--;
 }
@@ -240,6 +241,7 @@ void playerGameOver(App* app)
                 }
             }
             app->scene = 3;
+            ma_engine_play_sound(&app->engine, "assets/audio/game_over.mp3", NULL);
         }
         for (int i = 0; i < 2; i ++)
             if (gPlayers[i].lives == 0)
@@ -267,6 +269,7 @@ void playerGameOver(App* app)
                 fclose(save1);
             }
             app->scene = 3;
+            ma_engine_play_sound(&app->engine, "assets/audio/game_over.mp3", NULL);
         }
     } 
     
@@ -298,6 +301,7 @@ void playerControls(App* app)
         if (igIsKeyPressed(ImGuiKey_F, 0))
         {
             fireBullet(0);
+            ma_engine_play_sound(&app->engine, "assets/audio/shooting.mp3", NULL);
         }
     }
     
@@ -327,6 +331,7 @@ void playerControls(App* app)
             if (igIsKeyPressed(ImGuiKey_U, 0) || igIsKeyPressed(ImGuiKey_O, 0))
             {
                 fireBullet(1);
+                //ma_engine_play_sound(&app->engine, "assets/audio/shooting.mp3", NULL);
             }
         }
     }

@@ -13,7 +13,6 @@ void mineInit()
         fmine[i].angle = rand() % 360;                                  //Sets a random angle
         fmine[i].angle *= PI/180;                                  //Sets a random angle
         fmine[i].size = 3;
-        // fmine[i].type = floor(fmin(i * level * 0.1f, 4));
         fmine[i].type = 1;
         fmine[i].x = rand() % ((int)igGetIO()->DisplaySize.x / 50);     //Sets a random position on the X axis (within the window's limits)
         fmine[i].y = -rand() % ((int)igGetIO()->DisplaySize.y / 50);    //Sets a random position on the Y axis (within the window's limits)
@@ -22,12 +21,44 @@ void mineInit()
         fmine[i].isActive = true;
     }
 }
+
+void spawnFireball(int index)
+{
+    if (fmine[index].type == 1 || fmine[index].type == 3)
+        {
+            for (int i = 0; i < MINE_MAX; i++)
+            {
+                if (fmine[i].isActive == false)
+                {
+                    float tempX;
+                    float tempY;
+                    float normalizer;
+                    fmine[i].angle = fmine[index].angle;
+                    fmine[i].size = 1;
+                    fmine[i].type = 4;
+                    fmine[i].x = fmine[index].x;
+                    fmine[i].y = fmine[index].y;
+                    tempX = gPlayers[0].x - fmine[i].x;
+                    tempY = gPlayers[0].y - fmine[i].y;
+                    normalizer = sqrtf(powf(tempX, 2.0f) + powf(tempY, 2.0f));
+                    fmine[i].momentumX = tempX / normalizer;
+                    fmine[i].momentumY = tempY / normalizer;
+                    fmine[i].isActive = true;
+                    break;
+                }
+            }
+        }
+}
+
 void killMineFloating(int index)
 {
+    //si la mine est petite ou si c'est une boule de feu, la détruire
+    spawnFireball(index);
     if (fmine[index].size == 1)
     {
         fmine[index].isActive = false;
     }
+    //sinon, reduit la taille de la mine et en fait apparaitre une autre
     else
     {
         fmine[index].size --;
@@ -46,11 +77,14 @@ void killMineFloating(int index)
                 break;
             }
         }
-        fmine[index].angle += PI;
-        fmine[index].momentumX = cosf(fmine[index].angle) * 0.1;
-        fmine[index].momentumY = sinf(fmine[index].angle) * 0.1;
+        // si la mine est de type fireball ou magnetic-fireball, faire apparaitre une fireball
     }
+    fmine[index].angle += PI;
+    fmine[index].momentumX = cosf(fmine[index].angle) * 0.1;
+    fmine[index].momentumY = sinf(fmine[index].angle) * 0.1;
 }
+
+
 void drawMineFloating(entMF currentMine)
 {
     //Shape
@@ -93,6 +127,16 @@ void drawMineFloating(entMF currentMine)
         { 0.3f * cosf(PI), 0.3f * sinf(PI)},
         { 0.2f * cosf(PI), 0.2f * sinf(PI)}
     };
+    float2 pointsFireball[8] = {
+        { 0.2f * cosf(PI / 2), 0.2f * sinf(PI / 2)},
+        { 0.18f * cosf(PI / 4), 0.18f * sinf(PI / 4)},
+        { 0.16f * cosf(0), 0.16f * sinf(0)},
+        { 0.14f * cosf(PI / 4), 0.14f * -sinf(PI / 4)},
+        { 0.12f * cosf(PI / 2), 0.12f * -sinf(PI / 2)},
+        { 0.10f * -cosf(PI / 4), 0.10f * -sinf(PI / 4)},
+        { 0.08f * cosf(PI), 0.08f * sinf(PI)},
+        { 0.06f * cosf(PI / 2), 0.06f * sinf(PI / 2)}
+    };
     if (currentMine.isActive == true)
     {
         for (int j = 0; j < verticeAmount; ++j)     //Looping through the points
@@ -108,6 +152,8 @@ void drawMineFloating(entMF currentMine)
                 case 2: newPoint = pointsMagnetic[j];
                 break;
                 case 3: newPoint = pointsFiremag[j];
+                break;
+                case 4: newPoint = pointsFireball[j];
                 break;
             }
             newPoint.x *= currentMine.size;
@@ -151,17 +197,24 @@ void entityMineFloating(App* app)
                 fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 3;
                 break;
             
-            case 3 ... 4: //Magnetic Mine, Magnetic-Fireball Mine
-                int tempX;  int tempY;
+            case 2 ... 3: //Magnetic Mine, Magnetic-Fireball Mine
+                float tempX;
+                float tempY;
+                float normalizer;
                 tempX = gPlayers[0].x - fmine[i].x;
                 tempY = gPlayers[0].y - fmine[i].y;
-                fmine[i].momentumX += tempX * 0.01;
-                fmine[i].momentumY += tempY * 0.01;
-                fmine[i].momentumY *= 0.97;
-                fmine[i].momentumX *= 0.97;
+                normalizer = sqrtf(powf(tempX, 2.0f) + powf(tempY, 2.0f));
+                fmine[i].momentumX = tempX / normalizer;
+                fmine[i].momentumY = tempY / normalizer;
+                // fmine[i].momentumY *= 0.97;
+                // fmine[i].momentumX *= 0.97;
                 fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size) * 0.98; //Make it move.
                 fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 0.98;
+                break;
 
+            case 4: //Fireball
+                fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size); //Make it move.
+                fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size);
                 break;
 
             default:
@@ -183,10 +236,10 @@ void entityMineFloating(App* app)
             
             float2 mineBox[4] = 
             {
-                { fmine[i].x + (0.4f * fmine[i].size), fmine[i].y + (0.4f * fmine[i].size) },
-                { fmine[i].x + (0.4f * fmine[i].size), fmine[i].y + (-0.4f * fmine[i].size) },
-                { fmine[i].x + (-0.4f * fmine[i].size), fmine[i].y + (-0.4f * fmine[i].size) },
-                { fmine[i].x + (-0.4f * fmine[i].size), fmine[i].y + (0.4f * fmine[i].size) }
+                { fmine[i].x + (0.3f * fmine[i].size), fmine[i].y + (0.3f * fmine[i].size) },
+                { fmine[i].x + (0.3f * fmine[i].size), fmine[i].y + (-0.3f * fmine[i].size) },
+                { fmine[i].x + (-0.3f * fmine[i].size), fmine[i].y + (-0.3f * fmine[i].size) },
+                { fmine[i].x + (-0.3f * fmine[i].size), fmine[i].y + (0.3f * fmine[i].size) }
             };
             for (int p = 0; p < 2; p++)
             {
@@ -217,6 +270,7 @@ void entityMineFloating(App* app)
                         case 1: specialBonus = 225; break;
                         case 2: specialBonus = 400; break;
                         case 3: specialBonus = 650; break;
+                        case 4: specialBonus = 0; break;
                     }
                     float2 bulletSquare[4] =
                     {
@@ -231,7 +285,12 @@ void entityMineFloating(App* app)
                         gBullets[b].isActive = 0;                       //Killing the bullet.
                         switch(fmine[i].size)
                         {
-                            case 1: gPlayers[gBullets[b].player].score += 200; break;
+                            case 1: gPlayers[gBullets[b].player].score += 200;
+                            if (fmine[i].type == 4)
+                            {
+                                gPlayers[gBullets[b].player].score -= 90;
+                            }
+                            break;
                             case 2: gPlayers[gBullets[b].player].score += 135; break;
                             case 3: gPlayers[gBullets[b].player].score += 100; break;
                         }

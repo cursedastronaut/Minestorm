@@ -9,6 +9,7 @@ void displayGameOver(App* app)
         app->paused = false;
         app->twoPlayers = false;
         app->scene = 0;
+        app->gameinit = false;
     }
 
 }

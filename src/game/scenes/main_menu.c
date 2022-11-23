@@ -2,6 +2,7 @@
 #include "../../geo/text.c"
 #include "../../app.h"
 #include "../../graphics/static.c"
+#include "../player/player.c"
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 
 
@@ -32,6 +33,7 @@ void processingMainMenu(App* app)
         app->twoPlayers = false;
         app->scene = 1;
         printf("app->scene = 1\n");
+        playerInit(app);
     }
 
     //Lance une partie deux joueurs
@@ -40,6 +42,7 @@ void processingMainMenu(App* app)
         app->twoPlayers = true;
         app->scene = 1;
         printf("app->scene = 1\n");
+        playerInit(app);
     }
 
     //Quitte le jeu

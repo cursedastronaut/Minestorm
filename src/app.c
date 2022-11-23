@@ -19,7 +19,7 @@ void appInit(App* app)
     app->graphics.textures.copyright = cvLoadTexture("assets/copyright.png");         //Loads copyright text
     app->graphics.show_static = false;
     app->sceneMainMenu.show_controls = false;
-    playerInit(app);
+    /*playerInit(app);*/
 }
 
 //Handles the choosing of the chosen scene.

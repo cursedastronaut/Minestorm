@@ -154,7 +154,17 @@ void entityMineFloating(App* app)
                 break;
             }
             
-            
+            //Loop around borders
+            ImGuiIO* io = igGetIO();
+            if (fmine[i].x > io->DisplaySize.x / 50 + 1)
+                fmine[i].x = -0.5;
+            if (fmine[i].x < -1)
+                fmine[i].x = io->DisplaySize.x / 50 + 0.5;
+
+            if (fmine[i].y < -io->DisplaySize.y / 50 - 2 )
+                fmine[i].y = 0.5;
+            if (fmine[i].y > 1)
+                fmine[i].y = -io->DisplaySize.y / 50 - 0.5;
             
             
             float2 mineBox[4] = 

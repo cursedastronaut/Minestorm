@@ -310,8 +310,3 @@ void entityMineUpdate(App* app)
             fmine[i].isActive = false;
     }
 }
-
-//To do:
-/*
-Make the magnetic mine go to the nearest player
-*/

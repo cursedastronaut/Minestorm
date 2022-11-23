@@ -60,9 +60,5 @@ void processingGame(App* app)
         }
     }
     pauseGame(app);
-    /*
-    if (igIsKeyDown(ImGuiKey_A))
-    {
-        app->scene = 3;
-    }*/
+
 }

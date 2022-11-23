@@ -242,6 +242,18 @@ void playerGameOver(App* app)
     {
         if (gPlayers[0].lives <= 0)
         {
+            
+
+            FILE* save1 = fopen("save1.sav", "r");
+            fread(&app->bestScoreSingleplayer, sizeof(int), 1, save1);
+            fclose(save1);
+            if (gPlayers[0].score > app->bestScoreSingleplayer)
+            {
+                app->bestScoreSingleplayer = gPlayers[0].score;
+                FILE* save1 = fopen("save1.sav", "w");
+                fwrite(&app->bestScoreSingleplayer, sizeof(int), 1, save1);
+                fclose(save1);
+            }
             app->scene = 3;
         }
     } 

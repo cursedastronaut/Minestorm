@@ -226,6 +226,19 @@ void playerGameOver(App* app)
     {
         if (gPlayers[0].lives <= 0 && gPlayers[1].lives <= 0)
         {
+            FILE* save2 = fopen("save2.sav", "r");
+            fread(&app->bestScoreMultiplayer, sizeof(int), 2, save2);
+            fclose(save2);
+            for (int i = 0; i < 2; i++)
+            {
+                if (gPlayers[i].score > app->bestScoreMultiplayer[i])
+                {
+                    app->bestScoreMultiplayer[i] = gPlayers[i].score;
+                    FILE* save2 = fopen("save2.sav", "w");
+                    fwrite(&app->bestScoreMultiplayer, sizeof(int), 1, save2);
+                    fclose(save2);
+                }
+            }
             app->scene = 3;
         }
         for (int i = 0; i < 2; i ++)
@@ -233,8 +246,7 @@ void playerGameOver(App* app)
             {
                 gPlayers[i].x = -5; 
                 gPlayers[i].y = -5;
-            }
-                
+            }         
     }
 
 

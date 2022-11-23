@@ -49,6 +49,7 @@ typedef struct App
     int animtime;
     bool gameinit;
     int bestScoreSingleplayer;
+    int bestScoreMultiplayer[2];
 } App;
 
 void appInit(App* app);

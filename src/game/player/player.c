@@ -160,17 +160,22 @@ void bulletUpdate(App* app)
             };
             float2 playerSquare[4] =
             {
-                { -0.5f + gPlayers[0].x, 0.5f + gPlayers[0].y},
-                { 0.5f + gPlayers[0].x, 0.5f + gPlayers[0].y},
-                { 0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y},
-                { -0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y}
+                { -0.5f + gPlayers[i].x, 0.5f + gPlayers[i].y},
+                { 0.5f + gPlayers[i].x, 0.5f + gPlayers[i].y},
+                { 0.5f + gPlayers[i].x, -0.5f + gPlayers[i].y},
+                { -0.5f + gPlayers[i].x, -0.5f + gPlayers[i].y}
             };
-            if (checkCollisionSquareSquare(bulletSquare, playerSquare, app))
+            for (int j = 0; j < 2; j++)
             {
-                gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
-                gBullets[i].isActive = 0;                       //Killing the bullet.
-                gPlayers[0].lives --;
+                if (checkCollisionSquareSquare(bulletSquare, playerSquare, app) && gPlayers[j].invincibility <= 0)
+                {
+                    gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
+                    gBullets[i].isActive = 0;                       //Killing the bullet.
+                    gPlayers[j].lives --;
+                    gPlayers[j].invincibility = 5.0f;
+                }
             }
+            
 
             //Making it loop with the borders
             if (gBullets[i].x > io->DisplaySize.x / 50 + 1)

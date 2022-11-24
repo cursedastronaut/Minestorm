@@ -1,11 +1,11 @@
 PROGRAM=minestorm
 LIBS_PATH=libs/
 
-CC=x86_64-w64-mingw32-gcc
+CC=gcc
 CFLAGS=-Ofast 
 CPPFLAGS= -Iinclude/ -Iinclude/libs/
-LDFLAGS=-L$(LIBS_PATH)x86_64-w64-mingw32 -L$(LIBS_PATH)
-LDLIBS=-lglfw3 -lcanvas -lstdc++ -lgdi32
+LDFLAGS=-L$(LIBS_PATH)x86_64-linux-gnu -L$(LIBS_PATH)
+LDLIBS=-lglfw3 -lcanvas -lstdc++ -ldl -lpthread -lm
 
 CSRC = $(wildcard src/*.c) $(wildcard src/game/*.c)
 OBJS = $(CSRC:.c=.o)

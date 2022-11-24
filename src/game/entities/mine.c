@@ -180,6 +180,7 @@ void mineMovement(int i, App* app)
             break;
         
         case 2 ... 3: //Magnetic Mine, Magnetic-Fireball Mine
+{
             float tempX;
             float tempY;
             float normalizer;
@@ -192,6 +193,7 @@ void mineMovement(int i, App* app)
             // fmine[i].momentumX *= 0.97;
             fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size) * 0.98; //Make it move.
             fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 0.98;
+}
             break;
 
         case 4: //Fireball

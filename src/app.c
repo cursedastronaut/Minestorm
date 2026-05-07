@@ -2,9 +2,11 @@
 #include <cimgui.h>
 #include <canvas.h>
 #include <time.h>
+#include <stdlib.h>
 #include <math.h>
-#include "geo/geo.c"            //Moteur de jeu
+#include "geo/geo.h"            //Moteur de jeu
 #include "app.h"                //Db
+#include "graphics/graphics.h"
 #include "game/scenes/scenes.h" //Liste des scènes
 
 

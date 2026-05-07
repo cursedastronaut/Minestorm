@@ -1,10 +1,8 @@
-#pragma once
-#include "../../geo/text.c"
 #include "../../app.h"
-#include "../../graphics/static.c"
-#include "../player/player.c"
+#include "../player/player.h"
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
-
+#include <cimgui.h>
+#include <canvas.h>
 
 //Handles the Main Menu Display
 void displayMainMenu(App* app)

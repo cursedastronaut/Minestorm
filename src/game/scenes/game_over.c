@@ -1,4 +1,10 @@
-
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#include <cimgui.h>
+#include <canvas.h>
+#include "../../app.h"
+#include "../../mine/mine.h"
+#include "../hud/hud.h"
+#include "../player/player.h"
 
 void displayGameOver(App* app)
 {

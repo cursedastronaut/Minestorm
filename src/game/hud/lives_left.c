@@ -1,5 +1,9 @@
-#pragma once
-#include "../player/player.c"
+#include "../player/player.h"
+#include <stdio.h>
+#include <string.h>
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#include <cimgui.h>
+#include <canvas.h>
 
 void drawHUDLivesLeft(App* app)
 {

@@ -1,4 +1,5 @@
 #include "../app.h"
+#include <math.h>
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 float2 rotatePoint(float2 p, float2 c, float angle)
 {

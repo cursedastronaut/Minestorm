@@ -1,4 +1,8 @@
 #include <stdlib.h>
+#include "../app.h"
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#include <cimgui.h>
+#include <canvas.h>
 #define HORIZONTAL_STATICEFFECT_BLOCKS 256
 #define VERTICAL_STATICEFFECT_BLOCKS 96
 

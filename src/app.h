@@ -1,6 +1,10 @@
 #pragma once
+#ifndef APP_H
+#define APP_H
 #include <stdbool.h>
+#include <canvas.h>
 #include "audio.h"
+#include "game/game.h"
 #include <miniaudio.h>
 
 typedef struct float2
@@ -60,3 +64,5 @@ typedef struct App
 void appInit(App* app);
 void appUpdate(App* app);
 void appShutdown(App* app);
+
+#endif

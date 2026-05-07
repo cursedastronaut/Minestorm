@@ -1,12 +1,13 @@
-#pragma once
 #include "player.h"
 #include "../entities/bullet.h"
-#include "../../geo/collision.c"
+#include "../../geo/geo.h"
 #include <stdlib.h>
+#include <math.h>
 #include <time.h>
-#include "../tinkering.h"
 #include <unistd.h>
 #include <toolbox.h>
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#include <cimgui.h>
 
 
 Player gPlayers [MAX_AMOUNT_OF_PLAYERS];
@@ -104,14 +105,14 @@ bool fireBullet(int p)
         {
             gBullets[i].isActive = 1;               //Bullet is now active.
             gBullets[i].angle = gPlayers[p].angle;  //Bullet's angle is set to Player's angle
-            gBullets[i].x = rotatePoint( (float2){0.f,0.8f},
+            gBullets[i].pos.x = rotatePoint( (float2){0.f,0.8f},
                 (float2){0.f, 0.f}, gPlayers[p].angle).x + gPlayers[p].x;          //Bullet's X position is set to Player's X position
-            gBullets[i].y = rotatePoint( (float2){0.f,0.8f},
+            gBullets[i].pos.y = rotatePoint( (float2){0.f,0.8f},
                 (float2){0.f, 0.f}, gPlayers[p].angle).y + gPlayers[p].y;          //Bullet's Y position is set to Player's Y position
             gBullets[i].opacity = 255;              //Bullet's opacity is set to max.
-            gBullets[i].player = p;                 //Bullet's owner is the player who fired it.
-            gBullets[i].momentumX = (sin(-gPlayers[p].angle) * 0.27f);
-            gBullets[i].momentumY = (cos(-gPlayers[p].angle) * 0.27f);
+            gBullets[i].ownerPlayer = p;                 //Bullet's owner is the player who fired it.
+            gBullets[i].momentum.x = (sin(-gPlayers[p].angle) * 0.27f);
+            gBullets[i].momentum.y = (cos(-gPlayers[p].angle) * 0.27f);
             return 0;
         }
         if (gBullets[i].timeBeforeDeath < oldestBullet)
@@ -123,8 +124,8 @@ bool fireBullet(int p)
 
     if (oldestBulletIndex != -1)
     {
-        gBullets[oldestBulletIndex].x = gPlayers[p].x;
-        gBullets[oldestBulletIndex].y = gPlayers[p].y;
+        gBullets[oldestBulletIndex].pos.x = gPlayers[p].x;
+        gBullets[oldestBulletIndex].pos.y = gPlayers[p].y;
         gBullets[oldestBulletIndex].timeBeforeDeath = 3;
         gBullets[oldestBulletIndex].angle = gPlayers[p].angle;
     }
@@ -137,10 +138,10 @@ void bulletUpdate(App* app)
     {
         if (gBullets[i].isActive == 1)
         {
-            gBullets[i].x += gBullets[i].momentumX;  //cosf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 50; //Moves the bullet according
-            gBullets[i].y += gBullets[i].momentumY;  //sinf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 50; //to its firing angle.
+            gBullets[i].pos.x += gBullets[i].momentum.x;  //cosf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 50; //Moves the bullet according
+            gBullets[i].pos.y += gBullets[i].momentum.y;  //sinf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 50; //to its firing angle.
             gBullets[i].timeBeforeDeath -= app -> deltaTime;    //Lowering its lifetime.
-            cvAddPoint(gBullets[i].x, gBullets[i].y, CV_COL32(255,255,255,gBullets[i].opacity)); //Drawing the bullet
+            cvAddPoint(gBullets[i].pos.x, gBullets[i].pos.y, CV_COL32(255,255,255,gBullets[i].opacity)); //Drawing the bullet
 
             if (gBullets[i].timeBeforeDeath <= 1.0) //Gradually lowering the opacity
             {                                       //of the bullet before it dies.
@@ -154,10 +155,10 @@ void bulletUpdate(App* app)
             }
             float2 bulletSquare[4] =
             {
-                { -0.2f + gBullets[i].x, 0.2f + gBullets[i].y},
-                { 0.2f + gBullets[i].x, 0.2f + gBullets[i].y},
-                { 0.2f + gBullets[i].x, -0.2f + gBullets[i].y},
-                { -0.2f + gBullets[i].x, -0.2f + gBullets[i].y}
+                { -0.2f + gBullets[i].pos.x, 0.2f + gBullets[i].pos.y},
+                { 0.2f + gBullets[i].pos.x, 0.2f + gBullets[i].pos.y},
+                { 0.2f + gBullets[i].pos.x, -0.2f + gBullets[i].pos.y},
+                { -0.2f + gBullets[i].pos.x, -0.2f + gBullets[i].pos.y}
             };
             float2 playerSquare[4] =
             {
@@ -179,15 +180,15 @@ void bulletUpdate(App* app)
             
 
             //Making it loop with the borders
-            if (gBullets[i].x > io->DisplaySize.x / 50 + 1)
-                gBullets[i].x = -0.5;
-            if (gBullets[i].x < -1)
-                gBullets[i].x = io->DisplaySize.x / 50 + 0.5;
+            if (gBullets[i].pos.x > io->DisplaySize.x / 50 + 1)
+                gBullets[i].pos.x = -0.5;
+            if (gBullets[i].pos.x < -1)
+                gBullets[i].pos.x = io->DisplaySize.x / 50 + 0.5;
 
-            if (gBullets[i].y < -io->DisplaySize.y / 50 - 2 )
-                gBullets[i].y = 0.5;
-            if (gBullets[i].y > 1)
-                gBullets[i].y = -io->DisplaySize.y / 50 - 0.5;
+            if (gBullets[i].pos.y < -io->DisplaySize.y / 50 - 2 )
+                gBullets[i].pos.y = 0.5;
+            if (gBullets[i].pos.y > 1)
+                gBullets[i].pos.y = -io->DisplaySize.y / 50 - 0.5;
         }
     }
 }

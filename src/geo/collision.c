@@ -1,4 +1,5 @@
 #include <math.h>
+#include "geo.h"
 
 bool checkCollisionPointTriangle(float2 triangle[3], float2 point, float angle)
 {

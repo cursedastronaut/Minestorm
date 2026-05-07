@@ -1,12 +1,12 @@
+#include <stdbool.h>
+
 typedef struct Bullet
 {
-    float x;
-    float y;
-    float angle;
-    float timeBeforeDeath;
-    float momentumX;
-    float momentumY;
-    int isActive;
-    int opacity;
-    bool player;
+	float2	pos;
+	float	angle;
+	float	timeBeforeDeath;
+	float2	momentum;
+	int		isActive;
+	int		opacity;
+	bool	ownerPlayer;
 } Bullet;

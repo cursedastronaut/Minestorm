@@ -1,6 +1,9 @@
 #pragma once
 #include <string.h>
-#include "../player/player.c"
+#include <stdio.h>
+#include "../player/player.h"
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#include <cimgui.h>
 
 void addScore(int score, int player)
 {

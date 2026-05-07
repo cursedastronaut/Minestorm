@@ -1,6 +1,11 @@
 #include "../hud/hud.h"
-//#include "../player/player.c"
-#include "../entities/mine.c"
+#include "../player/player.h"
+#include "../../mine/mine.h"
+#include "../hud/hud.h"
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#include <cimgui.h>
+
+int level = 1;
 
 void gameInit(App* app)
 {
@@ -53,7 +58,6 @@ void processingGame(App* app)
     {
         playerScript(app);
         entityMineUpdate(app);
-        entityType();
         if (igIsKeyPressed(ImGuiKey_C, 0))
         {
             app->graphics.show_collisionbox = !app->graphics.show_collisionbox;

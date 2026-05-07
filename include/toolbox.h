@@ -12,6 +12,8 @@
 
 #define PI 3.14159276
 
+#include <stdbool.h>
+
 typedef struct float2
 {
 	float x;

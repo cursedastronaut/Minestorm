@@ -1,10 +1,20 @@
-#pragma once
-#include "entities.h"
+#include "mine.h"
 #include <stdlib.h>
-#include "../tinkering.h"
-#include "../player/player.c"
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#include <cimgui.h>
+#include <math.h>
+#include <toolbox.h>
+#include "../geo/geo.h"
+#include "../game/tinkering.h"
+#include "../game/game.h"
+#include "../game/player/player.h"
+#include "../game/entities/bullet.h"
+
+extern Player gPlayers [MAX_AMOUNT_OF_PLAYERS]; //TODO: remove plz
+extern Bullet gBullets [MAX_BULLET_COUNT];
+
+
 struct Mine fmine [MINE_MAX];   //Choosing the amount of mines (see tinkering.h)
-int level = 1;
 int chanceMineFloating = 100;
 int chanceMineFireball = 0;
 int chanceMineMagnetic = -20;
@@ -251,10 +261,10 @@ void mineCollision(int i, App* app)
             }
             float2 bulletSquare[4] =
             {
-                { -0.2f + gBullets[b].x, 0.2f + gBullets[b].y},
-                { 0.2f + gBullets[b].x, 0.2f + gBullets[b].y},
-                { 0.2f + gBullets[b].x, -0.2f + gBullets[b].y},
-                { -0.2f + gBullets[b].x, -0.2f + gBullets[b].y}
+                { -0.2f + gBullets[b].pos.x, 0.2f + gBullets[b].pos.y},
+                { 0.2f + gBullets[b].pos.x, 0.2f + gBullets[b].pos.y},
+                { 0.2f + gBullets[b].pos.x, -0.2f + gBullets[b].pos.y},
+                { -0.2f + gBullets[b].pos.x, -0.2f + gBullets[b].pos.y}
             };
             if (checkCollisionSquareSquare(mineBox, bulletSquare, app))
             {
@@ -263,16 +273,16 @@ void mineCollision(int i, App* app)
                 gBullets[b].isActive = 0;                       //Killing the bullet.
                 switch(fmine[i].size)
                 {
-                    case 1: gPlayers[gBullets[b].player].score += 200;
+                    case 1: gPlayers[gBullets[b].ownerPlayer].score += 200;
                     if (fmine[i].type == 4)
                     {
-                        gPlayers[gBullets[b].player].score -= 90;
+                        gPlayers[gBullets[b].ownerPlayer].score -= 90;
                     }
                     break;
-                    case 2: gPlayers[gBullets[b].player].score += 135; break;
-                    case 3: gPlayers[gBullets[b].player].score += 100; break;
+                    case 2: gPlayers[gBullets[b].ownerPlayer].score += 135; break;
+                    case 3: gPlayers[gBullets[b].ownerPlayer].score += 100; break;
                 }
-                gPlayers[gBullets[b].player].score += specialBonus;
+                gPlayers[gBullets[b].ownerPlayer].score += specialBonus;
                 killMineFloating(i);
             }   
         }

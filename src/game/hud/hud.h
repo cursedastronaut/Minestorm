@@ -1,3 +1,9 @@
-#include "score.c"
-#include "lives_left.c"
-#include "draw_level.c"
+#ifndef HUD_H
+#define	HUD_H
+#include "../../app.h"
+
+void	drawHUDScore(App* app);
+void	drawHUDLivesLeft(App* app);
+void	drawHUDLevel(App* app);
+
+#endif

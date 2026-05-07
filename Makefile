@@ -7,7 +7,7 @@ CPPFLAGS= -Iinclude/ -Iinclude/libs/
 LDFLAGS=-L$(LIBS_PATH)x86_64-linux-gnu -L$(LIBS_PATH)
 LDLIBS=-lglfw3 -lcanvas -lstdc++ -ldl -lpthread -lm
 
-CSRC = $(wildcard src/*.c) $(wildcard src/game/*.c)
+CSRC = $(wildcard src/*.c) $(wildcard src/game/*.c) $(wildcard src/game/entities/shape/*.c)
 OBJS = $(CSRC:.c=.o)
 
 DEPS=$(OBJS:.o=.d)

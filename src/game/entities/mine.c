@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "../tinkering.h"
 #include "../player/player.c"
-struct entMF fmine [MINE_MAX];   //Choosing the amount of mines (see tinkering.h)
+struct Mine fmine [MINE_MAX];   //Choosing the amount of mines (see tinkering.h)
 int level = 1;
 int chanceMineFloating = 100;
 int chanceMineFireball = 0;
@@ -113,7 +113,7 @@ void killMineFloating(int index)
     fmine[index].momentumY = sinf(fmine[index].angle) * 0.1;
 }
 
-void drawMineFloating(entMF currentMine)
+void drawMineFloating(Mine currentMine)
 {
     //Shape
     int verticeAmount = 8;

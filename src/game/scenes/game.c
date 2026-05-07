@@ -6,7 +6,7 @@ void gameInit(App* app)
 {
     if (app->gameinit == false)
     {
-        mineInit(app);
+        mineInit();
         app->gameinit = true;
     }
 }

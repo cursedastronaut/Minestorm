@@ -11,6 +11,3 @@
 
 
 
-
-//MATH TINKERING
-#define PI 3.14159276

@@ -1,8 +1,12 @@
-float2 pointsFloat[6] = {
-        { 0.1f * cosf(PI / 2), 0.1f * sinf(PI / 2)},            
-        { 0.3f * cosf(PI / 6), 0.3f * sinf(PI / 6)},
-        { 0.1f * cosf(-PI / 6), 0.1f * sinf(-PI / 6)},
-        { 0.3f * cosf(-PI / 2), 0.3f * sinf(-PI / 2)},
-        { 0.1f * cosf(-5 * PI / 6), 0.1f * sinf(-5 * PI / 6)},
-        { 0.3f * cosf((5 * PI) / 6), 0.3f * sinf((5 * PI) / 6)}
-};
+#include <toolbox.h>
+#include <math.h>
+
+
+	float2 pointsFloat[6] = {
+		{0.000000, 0.100000},
+		{0.259808, 0.150000},
+		{0.086603, -0.050000},
+		{-0.000000, -0.300000},
+		{-0.086603, -0.050000},
+		{-0.259808, 0.150000}
+	};

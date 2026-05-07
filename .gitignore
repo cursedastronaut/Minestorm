@@ -10,3 +10,5 @@ libs.old/
 app.exe.stackdump
 save1.sav
 save2.sav
+*.bin
+minestorm

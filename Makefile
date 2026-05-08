@@ -2,7 +2,7 @@ PROGRAM=minestorm
 LIBS_PATH=libs/
 
 CC=gcc
-CFLAGS=-Ofast
+CFLAGS=-Ofast -g3
 CPPFLAGS= -Iinclude/ -Iinclude/libs/
 LDFLAGS=-L$(LIBS_PATH)x86_64-linux-gnu -L$(LIBS_PATH)
 LDLIBS=-lglfw3 -lcanvas -lstdc++ -ldl -lpthread -lm

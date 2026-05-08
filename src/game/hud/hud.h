@@ -2,8 +2,8 @@
 #define	HUD_H
 #include "../../app.h"
 
-void	drawHUDScore(App* app);
-void	drawHUDLivesLeft(App* app);
+void	drawHUDLivesLeft(Player *player, bool onTheLeft);
+void	drawHUDScore(Player *player, bool onTheLeft);
 void	drawHUDLevel(App* app);
 
 #endif

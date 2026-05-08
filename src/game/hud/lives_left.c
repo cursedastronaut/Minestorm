@@ -9,11 +9,11 @@
 void drawHUDLivesLeft(Player *player, bool onTheLeft)
 {
 	if (onTheLeft)
-	    cvAddFormattedText(0,-1, CV_COL32_WHITE, "P1 Li%s: %d", player->lives > 1 ? "ves" : "fe",player->lives);
-    else
-    {
-        char output[15];
-        sprintf(output, "P2 Li%s: %d", player->lives > 1 ? "ves" : "fe",player->lives);
-        cvAddFormattedText(( igGetIO()->DisplaySize.x/50 ) - (strlen(output)) * 0.3, -1, CV_COL32_WHITE, output);
-    }
+		cvAddFormattedText(0,-1, CV_COL32_WHITE, "P1 Li%s: %d", player->lives > 1 ? "ves" : "fe",player->lives);
+	else if (player->app && player->app->twoPlayers)
+	{
+		char output[15];
+		sprintf(output, "P2 Li%s: %d", player->lives > 1 ? "ves" : "fe",player->lives);
+		cvAddFormattedText(( igGetIO()->DisplaySize.x/50 ) - (strlen(output)) * 0.3, -1, CV_COL32_WHITE, output);
+	}
 }

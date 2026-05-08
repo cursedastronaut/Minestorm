@@ -2,7 +2,9 @@
 #define BULLET_H
 #include <stdbool.h>
 #include <toolbox.h>
+#ifndef PLAYER_H
 #include "player/player.h"
+#endif
 
 typedef struct Mine Mine;
 

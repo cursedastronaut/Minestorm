@@ -4,11 +4,12 @@
 #include <stdbool.h>
 #include <canvas.h>
 #include "audio.h"
+#include "game/player/player.h"
+#include "mine/mine.h"
 #include "game/bullet.h"
 #include "game/game.h"
 #include <miniaudio.h>
 #include <toolbox.h>
-#include "game/player/player.h"
 
 typedef struct textures
 {
@@ -39,8 +40,9 @@ typedef struct App
     struct graphics graphics;
     struct sceneMainMenu sceneMainMenu;
 
-	Player player[2];
-	Bullet bullets[MAX_BULLET_COUNT];
+	Player	player[2];
+	Mine	mines[MINE_MAX];
+	Bullet	bullets[MAX_BULLET_COUNT];
 
     bool paused;
 

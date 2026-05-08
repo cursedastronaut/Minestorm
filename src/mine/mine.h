@@ -26,6 +26,6 @@ typedef struct Mine
     bool  isActive;
 } Mine;
 
-void entityMineUpdate(App* app);
+void entityMineUpdate(App* app, Player *player);
 void entityType();
 void mineInit();

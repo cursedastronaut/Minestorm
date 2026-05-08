@@ -1,5 +1,6 @@
 #include "../hud/hud.h"
 #include "../player/player.h"
+#include "../bullet.h"
 #include "../../mine/mine.h"
 #include "../hud/hud.h"
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
@@ -19,9 +20,7 @@ void gameInit(App* app)
 void pauseGame(App* app)
 {
     if (igIsKeyPressed(ImGuiKey_Space, 0))
-    {
         app->paused = !app->paused;
-    }
 
     if (app->paused == true)
     {
@@ -30,7 +29,8 @@ void pauseGame(App* app)
 
         if (igIsKeyPressed(ImGuiKey_Escape, 0))
         {
-            playerInit(app);
+            playerInit(app, &app->player[0], 0);
+            playerInit(app, &app->player[1], 1);
             app->paused = false;
             app->twoPlayers = false;
             app->scene = 0;
@@ -54,15 +54,20 @@ void displayGame(App* app)
 
 void processingGame(App* app)
 {
-    if (app->paused != true)
+    if (!app->paused)
     {
-        playerScript(app);
-        entityMineUpdate(app);
+        playerScript(&app->player[0]);
+        entityMineUpdate(app, app->player);
         if (igIsKeyPressed(ImGuiKey_C, 0))
         {
             app->graphics.show_collisionbox = !app->graphics.show_collisionbox;
         }
     }
     pauseGame(app);
+	Player *players[2];
+	players[0] = &app->player[0];
+	players[1] = &app->player[1];
 
+	Player **ptr = players;
+	bulletUpdate(app, ptr, 2);
 }

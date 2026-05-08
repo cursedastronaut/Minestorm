@@ -1,427 +1,307 @@
 #include "player.h"
-#include "../entities/bullet.h"
+#include "../bullet.h"
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
 #include <unistd.h>
 #include <toolbox.h>
-#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
-#include <cimgui.h>
+#include "../../app.h"
 
-
-Player gPlayers [MAX_AMOUNT_OF_PLAYERS];
 Bullet gBullets [MAX_BULLET_COUNT];
 
 //Initializes the player's position
-void playerInit(App* app)
+void playerInit(App* app, Player* player, bool playerNumber)
 {
-    //Sets the positions
-    gPlayers[0].x = 12.5;       gPlayers[0].y = -7;
-    if (app->twoPlayers == true)
-    {
-        gPlayers[1].x = 7.5;    gPlayers[1].y = -7;
-    }
-    else
-    {
-        gPlayers[1].x = 0;    gPlayers[1].y = 2;
-    }
+	player->app = app;
 
-    for (int i = 0; i < MAX_BULLET_COUNT; i++) //Loops through the bullets
-    {
-        gBullets[i].isActive = 0; //Deactivating the bullets (just in case)
-        gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME; //See tinkering.h
-    }
-    for (int i = 0; i<2 ; i++)
-    {
-        gPlayers[i].score = 0; //Initial score
-        gPlayers[i].lives = 3;
-        gPlayers[i].momentumX = 0;
-        gPlayers[i].momentumY = 0;
-        gPlayers[i].angle = 0;
-        gPlayers[i].invincibility = 5.0f;
-    }
+	player->app->deltaTime += 0;
+	//Sets the positions
+	player->pos = (float2){.x =12, 5.f - 7.f};
+	if (playerNumber == 1)
+		player->pos = (float2){.x = 7.5f, .y = -7.f};
+
+	//TODO: move to bulletsInit
+	for (int i = 0; i < MAX_BULLET_COUNT; i++) //Loops through the bullets
+	{
+		gBullets[i].isActive = 0; //Deactivating the bullets (just in case)
+		gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME; //See tinkering.h
+	}
+	player->score = 0; //Initial score
+	player->lives = 3;
+	player->momentumX = 0;
+	player->momentumY = 0;
+	player->angle = 0;
+	player->invincibility = 5.0f;
+	player->color = CV_COL32(255,0,0,255);
+	if (playerNumber == 1)
+		player->color = CV_COL32(0,255,0,255);
+	if (playerNumber == 0)
+	{
+		player->controls.fire =				ImGuiKey_F;
+		player->controls.forward =			ImGuiKey_R;
+		player->controls.forwardAlt =		ImGuiKey_UpArrow;
+		player->controls.rotateLeft =		ImGuiKey_D;
+		player->controls.rotateLeftAlt =	ImGuiKey_LeftArrow;
+		player->controls.rotateRight =		ImGuiKey_G;
+		player->controls.rotateRightAlt =	ImGuiKey_RightArrow;
+		player->controls.teleport =			ImGuiKey_T;
+		player->controls.teleportAlt =		ImGuiKey_E;
+	} else {
+		player->controls.fire =				ImGuiKey_O;
+		player->controls.forward =			ImGuiKey_Keypad8;
+		player->controls.forwardAlt =		ImGuiKey_I;
+		player->controls.rotateLeft =		ImGuiKey_Keypad4;
+		player->controls.rotateLeftAlt =	ImGuiKey_J;
+		player->controls.rotateRight =		ImGuiKey_Keypad6;
+		player->controls.rotateRightAlt =	ImGuiKey_L;
+		player->controls.teleport =			ImGuiKey_K;
+		player->controls.teleportAlt =		ImGuiKey_Keypad9;
+	}
 }
 //Draws the player to the screen
-bool drawPlayer(App* app)
+bool drawPlayer(Player *player)
 {
-    float2 points[6] = { //Shape
-        { 0.0f, 0.5f },
-        { 0.5f, -0.3f },
-        { 0.35f, -0.3f },
-        { 0.0f, -0.5f },
-        { -0.35f, -0.3f },
-        { -0.5f, -0.3f },
-    };
-    for (int j = 0; j < 2; j++) //Looping through the players. j is the player index variable.
-    {
-        if (gPlayers[j].invincibility > 0)
-        {
-            cvAddTexture(gPlayers[j].x, gPlayers[j].y,  app->graphics.textures.forcefield);
-            if (app->animtime % 6 == 0)
-            {return true;}
-            else
-            {}
-        }
-        for (int i = 0; i < 6; ++i) // Looping through the points making the shape.
-        {
-            float2 newPoint = points[i];
-            float2 temp = newPoint;
-            float2 xy = {0, 0};
-            newPoint.x = rotatePoint(temp, xy, gPlayers[j].angle).x + gPlayers[j].x;
-            newPoint.y = rotatePoint(temp, xy, gPlayers[j].angle).y + gPlayers[j].y;
+	if (player->invincibility > 0)
+	{
+		cvAddTexture(player->pos.x, player->pos.y,  player->app->graphics.textures.forcefield);
+		if (player->app->animtime % 6 == 0) //flickering effect
+			return (true);
+	}
+	for (int i = 0; i < 6; ++i) // Looping through the points making the shape.
+	{
+		float2 newPoint = shapePlayer[i];
+		float2 temp = newPoint;
+		float2 xy = {0, 0};
+		newPoint.x = rotatePoint(temp, xy, player->angle).x + player->pos.x;
+		newPoint.y = rotatePoint(temp, xy, player->angle).y + player->pos.y;
 
-            cvPathLineTo(newPoint.x, newPoint.y);
-        }
-        cvPathStroke(CV_COL32_WHITE, 1);
-    }
-    cvAddPoint(gPlayers[0].x, gPlayers[0].y, CV_COL32(255,0,0,255));
-    cvAddPoint(gPlayers[1].x, gPlayers[1].y, CV_COL32(0,255,0,255));
-
-    float2 collisionSquare[4] =
-    {
-        { -0.5f + gPlayers[0].x, 0.5f + gPlayers[0].y},
-        { 0.5f + gPlayers[0].x, 0.5f + gPlayers[0].y},
-        { 0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y},
-        { -0.5f + gPlayers[0].x, -0.5f + gPlayers[0].y}
-    };
+		cvPathLineTo(newPoint.x, newPoint.y);
+	}
+	cvPathStroke(CV_COL32_WHITE, true);
+	cvAddPoint(player->pos.x, player->pos.y, player->color);
 }
+
 //Teleports the player
-void playerTeleport(App* app, int p)
+void playerTeleport(Player	*player)
 {
-    ImGuiIO* io = igGetIO();
-    gPlayers[p].invincibility = 2.0f;
-    gPlayers[p].x = rand() % ((int) io->DisplaySize.x / 50);  //Moves the player with the index p to a
-    gPlayers[p].y = -rand() % ((int) io->DisplaySize.y / 50); //random X and Y position within window limits.
+	ImGuiIO* io = igGetIO();
+	player->invincibility = 2.0f;
+	player->pos.x = rand() % ((int) io->DisplaySize.x / 50);
+	player->pos.y = -rand() % ((int) io->DisplaySize.y / 50);
 }
+
 //Fires a bullet
-bool fireBullet(int p)
+void	fireBullet(Player *player)
 {
-    float oldestBullet = BULLET_LIFE_TIME;
-    int oldestBulletIndex = -1;
-    for (int i = 0; i < MAX_BULLET_COUNT; i++)
-    {
-        if (gBullets[i].isActive == 0)
-        {
-            gBullets[i].isActive = 1;               //Bullet is now active.
-            gBullets[i].angle = gPlayers[p].angle;  //Bullet's angle is set to Player's angle
-            gBullets[i].pos.x = rotatePoint( (float2){0.f,0.8f},
-                (float2){0.f, 0.f}, gPlayers[p].angle).x + gPlayers[p].x;          //Bullet's X position is set to Player's X position
-            gBullets[i].pos.y = rotatePoint( (float2){0.f,0.8f},
-                (float2){0.f, 0.f}, gPlayers[p].angle).y + gPlayers[p].y;          //Bullet's Y position is set to Player's Y position
-            gBullets[i].opacity = 255;              //Bullet's opacity is set to max.
-            gBullets[i].ownerPlayer = p;                 //Bullet's owner is the player who fired it.
-            gBullets[i].momentum.x = (sin(-gPlayers[p].angle) * 0.27f);
-            gBullets[i].momentum.y = (cos(-gPlayers[p].angle) * 0.27f);
-            return 0;
-        }
-        if (gBullets[i].timeBeforeDeath < oldestBullet)
-        {
-            oldestBullet = gBullets[i].timeBeforeDeath;
-            oldestBulletIndex = i;
-        }
-    }
+	float	oldestBullet = BULLET_LIFE_TIME;
+	int		oldestBulletIndex = -1;
+	for (int i = 0; i < MAX_BULLET_COUNT; ++i)
+	{
+		if (gBullets[i].isActive == false)
+		{
+			gBullets[i].isActive = true;		//Bullet is now active.
+			gBullets[i].angle = player->angle;  //Bullet's angle is set to Player's angle
+			gBullets[i].pos.x = rotatePoint( (float2){0.f,0.8f},
+				(float2){0.f, 0.f}, player->angle).x + player->pos.x;          //Bullet's X position is set to Player's X position
+			gBullets[i].pos.y = rotatePoint( (float2){0.f,0.8f},
+				(float2){0.f, 0.f}, player->angle).y + player->pos.y;          //Bullet's Y position is set to Player's Y position
+			gBullets[i].opacity = 255;              //Bullet's opacity is set to max.
+			gBullets[i].ownerPlayer = player;                 //Bullet's owner is the player who fired it.
+			gBullets[i].momentum.x = (sin(-player->angle) * 0.27f);
+			gBullets[i].momentum.y = (cos(-player->angle) * 0.27f);
+		}
+		if (gBullets[i].timeBeforeDeath < oldestBullet)
+		{
+			oldestBullet = gBullets[i].timeBeforeDeath;
+			oldestBulletIndex = i;
+		}
+	}
 
-    if (oldestBulletIndex != -1)
-    {
-        gBullets[oldestBulletIndex].pos.x = gPlayers[p].x;
-        gBullets[oldestBulletIndex].pos.y = gPlayers[p].y;
-        gBullets[oldestBulletIndex].timeBeforeDeath = 3;
-        gBullets[oldestBulletIndex].angle = gPlayers[p].angle;
-    }
-    return 0;
+	if (oldestBulletIndex != -1)
+	{
+		gBullets[oldestBulletIndex].pos.x = player->pos.x;
+		gBullets[oldestBulletIndex].pos.y = player->pos.y;
+		gBullets[oldestBulletIndex].timeBeforeDeath = 3.f;
+		gBullets[oldestBulletIndex].angle = player->angle;
+	}
 }
-void bulletUpdate(App* app)
-{
-    ImGuiIO* io = igGetIO();
-    for (int i = 0; i < MAX_BULLET_COUNT; i++)
-    {
-        if (gBullets[i].isActive == 1)
-        {
-            gBullets[i].pos.x += gBullets[i].momentum.x;  //cosf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 50; //Moves the bullet according
-            gBullets[i].pos.y += gBullets[i].momentum.y;  //sinf(gBullets[i].angle + (PI / 2)) * app -> deltaTime * 50; //to its firing angle.
-            gBullets[i].timeBeforeDeath -= app -> deltaTime;    //Lowering its lifetime.
-            cvAddPoint(gBullets[i].pos.x, gBullets[i].pos.y, CV_COL32(255,255,255,gBullets[i].opacity)); //Drawing the bullet
 
-            if (gBullets[i].timeBeforeDeath <= 1.0) //Gradually lowering the opacity
-            {                                       //of the bullet before it dies.
-                gBullets[i].opacity -= 255/60;
-            }
+//TODO: move to bullet.c
 
-            if (gBullets[i].timeBeforeDeath <= 0)
-            {
-                gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
-                gBullets[i].isActive = 0;                       //Killing the bullet.
-            }
-            float2 bulletSquare[4] =
-            {
-                { -0.2f + gBullets[i].pos.x, 0.2f + gBullets[i].pos.y},
-                { 0.2f + gBullets[i].pos.x, 0.2f + gBullets[i].pos.y},
-                { 0.2f + gBullets[i].pos.x, -0.2f + gBullets[i].pos.y},
-                { -0.2f + gBullets[i].pos.x, -0.2f + gBullets[i].pos.y}
-            };
-            float2 playerSquare[4] =
-            {
-                { -0.5f + gPlayers[i].x, 0.5f + gPlayers[i].y},
-                { 0.5f + gPlayers[i].x, 0.5f + gPlayers[i].y},
-                { 0.5f + gPlayers[i].x, -0.5f + gPlayers[i].y},
-                { -0.5f + gPlayers[i].x, -0.5f + gPlayers[i].y}
-            };
-            for (int j = 0; j < 2; j++)
-            {
-                if (checkCollisionSquareSquare(bulletSquare, playerSquare, app) && gPlayers[j].invincibility <= 0)
-                {
-                    gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME;
-                    gBullets[i].isActive = 0;                       //Killing the bullet.
-                    gPlayers[j].lives --;
-                    gPlayers[j].invincibility = 5.0f;
-                }
-            }
-            
-
-            //Making it loop with the borders
-            if (gBullets[i].pos.x > io->DisplaySize.x / 50 + 1)
-                gBullets[i].pos.x = -0.5;
-            if (gBullets[i].pos.x < -1)
-                gBullets[i].pos.x = io->DisplaySize.x / 50 + 0.5;
-
-            if (gBullets[i].pos.y < -io->DisplaySize.y / 50 - 2 )
-                gBullets[i].pos.y = 0.5;
-            if (gBullets[i].pos.y > 1)
-                gBullets[i].pos.y = -io->DisplaySize.y / 50 - 0.5;
-        }
-    }
-}
 void bulletDebug()
 {
-    int bulletCount = 0;
-    for (int i = 0; i < MAX_BULLET_COUNT; i++)
-    {
-        if (gBullets[i].isActive == true)
-        {
-            bulletCount ++;
-        }
-    }
-    igText("Drawn Bullets: %d | Max: %d", bulletCount, MAX_BULLET_COUNT);
+	int bulletCount = 0;
+	for (int i = 0; i < MAX_BULLET_COUNT; i++)
+	{
+		if (gBullets[i].isActive == true)
+		{
+			bulletCount ++;
+		}
+	}
+	igText("Drawn Bullets: %d | Max: %d", bulletCount, MAX_BULLET_COUNT);
 }
 
-void killPlayer(int index, App* app)
+void killPlayer(Player *player)
 {
-    ma_engine_play_sound(&app->engine, "assets/audio/death.mp3", NULL);
-    gPlayers[index].invincibility = 5.0;
-    gPlayers[index].lives--;
+	ma_engine_play_sound(&player->app->engine, "assets/audio/death.mp3", NULL);
+	player->invincibility = 5.0;
+	--player->lives;
 }
 
-void playerInvincibility(App* app)
+void playerInvincibility(Player *player)
 {
-    for (int index = 0; index < 2; index++)
-    {
-        if (gPlayers[index].invincibility > 0.0f)
-        {
-            gPlayers[index].invincibility -= app->deltaTime;
-        }
-    }
+	if (player->invincibility > 0.0f)
+	{
+		player->invincibility -= player->app->deltaTime;
+	}
 }
 
-void playerGameOver(App* app)
+
+void playerGameOver(Player *player)
 {
-    if (app->twoPlayers == true)
-    {
-        if (gPlayers[0].lives <= 0 && gPlayers[1].lives <= 0)
-        {
-            FILE* save2 = fopen("save2.sav", "r");
-            fread(&app->bestScoreMultiplayer, sizeof(int), 2, save2);
-            fclose(save2);
-            for (int i = 0; i < 2; i++)
-            {
-                if (gPlayers[i].score > app->bestScoreMultiplayer[i])
-                {
-                    app->bestScoreMultiplayer[i] = gPlayers[i].score;
-                    FILE* save2 = fopen("save2.sav", "w");
-                    fwrite(&app->bestScoreMultiplayer, sizeof(int), 1, save2);
-                    fclose(save2);
-                }
-            }
-            app->scene = 3;
-            ma_engine_play_sound(&app->engine, "assets/audio/game_over.mp3", NULL);
-        }
-        for (int i = 0; i < 2; i ++)
-            if (gPlayers[i].lives == 0)
-            {
-                gPlayers[i].x = -5; 
-                gPlayers[i].y = -5;
-            }         
-    }
+	if (player->app->twoPlayers == true)
+	{
+		if (player->app->player[0].lives <= 0 && player->app->player[1].lives <= 0)
+		{
+			FILE* save2 = fopen("save2.sav", "r");
+			if (save2)
+			{
+				fread(&player->app->bestScoreMultiplayer, sizeof(int), 2, save2);
+				fclose(save2);
+			}
+			else
+				player->app->bestScoreMultiplayer[0] = 0;
+				player->app->bestScoreMultiplayer[0] = 1;
+			for (int i = 0; i < 2; i++)
+			{
+				if (player->app->player[i].score > player->app->bestScoreMultiplayer[i])
+				{
+					player->app->bestScoreMultiplayer[i] = player->app->player[i].score;
+					FILE* save2 = fopen("save2.sav", "w");
+					if (save2)
+					{
+						fwrite(&player->app->bestScoreMultiplayer, sizeof(int), 2, save2);
+						fclose(save2);
+					}
+				}
+			}
+			player->app->scene = 3;
+			ma_engine_play_sound(&player->app->engine, "assets/audio/game_over.mp3", NULL);
+		}
+		for (int i = 0; i < 2; i ++)
+			if (player->app->player[i].lives == 0)
+			{
+				player->app->player[i].pos.x = -5; 
+				player->app->player[i].pos.y = -5;
+			}
+	}
+	else
+	{
+		if (player->app->player[0].lives <= 0)
+		{
+			
 
-
-    else
-    {
-        if (gPlayers[0].lives <= 0)
-        {
-            
-
-            FILE* save1 = fopen("save1.sav", "r");
-            fread(&app->bestScoreSingleplayer, sizeof(int), 1, save1);
-            fclose(save1);
-            if (gPlayers[0].score > app->bestScoreSingleplayer)
-            {
-                app->bestScoreSingleplayer = gPlayers[0].score;
-                FILE* save1 = fopen("save1.sav", "w");
-                fwrite(&app->bestScoreSingleplayer, sizeof(int), 1, save1);
-                fclose(save1);
-            }
-            app->scene = 3;
-            ma_engine_play_sound(&app->engine, "assets/audio/game-over.mp3", NULL);
-        }
-    } 
-    
+			FILE* save1 = fopen("save1.sav", "r");
+			if (save1)
+			{
+				fread(&player->app->bestScoreSingleplayer, sizeof(int), 1, save1);
+				fclose(save1);
+			}
+			else
+				player->app->bestScoreSingleplayer = 0;
+			if (player->app->player[0].score > player->app->bestScoreSingleplayer)
+			{
+				player->app->bestScoreSingleplayer = player->app->player[0].score;
+				FILE* save1 = fopen("save1.sav", "w");
+				if (save1)
+				{
+					fwrite(&player->app->bestScoreSingleplayer, sizeof(int), 1, save1);
+					fclose(save1);
+				}
+			}
+			player->app->scene = 3;
+			ma_engine_play_sound(&player->app->engine, "assets/audio/game-over.mp3", NULL);
+		}
+	} 
 }
 
 //Checks for input and prepare for movement
-void playerControls(App* app)
+void playerControls(Player *player)
 {
-    if (gPlayers[0].lives != 0)
-    {
-        if (igIsKeyDown(ImGuiKey_D) || igIsKeyDown(ImGuiKey_LeftArrow))
-        {
-            gPlayers[0].angle += (480.0f * PI / 360.0f) * app->deltaTime;
-        }
-        if (igIsKeyDown(ImGuiKey_G) || igIsKeyDown(ImGuiKey_RightArrow))
-        {
-            gPlayers[0].angle -= (480.0f * PI / 360.0f) * app->deltaTime;
-        }
-        if (igIsKeyDown(ImGuiKey_R) || igIsKeyDown(ImGuiKey_UpArrow))
-        {   
-            gPlayers[0].momentumX += (sin(-gPlayers[0].angle) * 0.25f);
-            gPlayers[0].momentumY += (cos(-gPlayers[0].angle) * 0.25f);
-        }
+	if (player->lives == 0)
+		return;
+	if ((igIsKeyDown(player->controls.rotateLeft) || igIsKeyDown(player->controls.rotateLeftAlt)))
+		player->angle += (480.0f * PI / 360.0f) * player->app->deltaTime;
+	if (igIsKeyDown(player->controls.rotateRight) || igIsKeyDown(player->controls.rotateRightAlt))
+		player->angle -= (480.0f * PI / 360.0f) * player->app->deltaTime;
+	if (igIsKeyDown(player->controls.forward) || igIsKeyDown(player->controls.forwardAlt))
+	{   
+		player->momentumX += (sin(-player->angle) * 0.25f);
+		player->momentumY += (cos(-player->angle) * 0.25f);
+	}
 
-        if (igIsKeyPressed(ImGuiKey_T, 0) || igIsKeyPressed(ImGuiKey_E, 0))
-        {
-            playerTeleport(app,0);
-        }
-        if (igIsKeyPressed(ImGuiKey_F, 0))
-        {
-            fireBullet(0);
-            ma_engine_play_sound(&app->engine, "assets/audio/shooting.mp3", NULL);
-        }
-    }
-    
-    //PLAYER 2
-    if (app->twoPlayers == true)
-    {
-        if (gPlayers[1].lives != 0)
-        {
-            if (igIsKeyDown(ImGuiKey_Keypad4) || igIsKeyDown(ImGuiKey_J))
-            {
-                gPlayers[1].angle += (480.0f * PI / 360.0f) * app->deltaTime;
-            }
-            if (igIsKeyDown(ImGuiKey_Keypad6) ||igIsKeyDown(ImGuiKey_L))
-            {
-                gPlayers[1].angle -= (480.0f * PI / 360.0f) * app->deltaTime;
-            }
-            if (igIsKeyDown(ImGuiKey_Keypad8) || igIsKeyDown(ImGuiKey_I))
-            {   
-                gPlayers[1].momentumX += (sin(-gPlayers[1].angle) * 0.25f);
-                gPlayers[1].momentumY += (cos(-gPlayers[1].angle) * 0.25f);
-            }
-            
-            if (igIsKeyPressed(ImGuiKey_K, 0))
-            {
-                playerTeleport(app,1);
-            }
-            if (igIsKeyPressed(ImGuiKey_U, 0) || igIsKeyPressed(ImGuiKey_O, 0))
-            {
-                fireBullet(1);
-                ma_engine_play_sound(&app->engine, "assets/audio/shooting.mp3", NULL);
-            }
-        }
-    }
-
-        //Angle
-        for (int i = 0; i < 2; i++)
-        {
-            if (gPlayers[i].angle > 2.0f * PI)
-            {
-                gPlayers[i].angle = 0.0f;
-            }
-            else if (gPlayers[i].angle < 0.0f)
-            {
-                gPlayers[i].angle = 2.0f * PI;
-            }
-        }
-        
+	if (igIsKeyPressed(player->controls.teleport, 0) || igIsKeyPressed(player->controls.teleportAlt, 0))
+		playerTeleport(player);
+	if (igIsKeyPressed(player->controls.fire, 0))
+	{
+		fireBullet(player);
+		ma_engine_play_sound(&player->app->engine, "assets/audio/shooting.mp3", NULL);
+	}
+	if (player->angle > 2.0f * PI)
+		player->angle = 0.0f;
+	else if (player->angle < 0.0f)
+		player->angle = 2.0f * PI;
 }
+
 //Actual movement processing
-void playerMovement(App* app)
+void playerMovement(Player *player)
 {
-    //Movement
-    for (int i = 0; i < 2; i++)
-    {
-        gPlayers[i].x += gPlayers[i].momentumX * app->deltaTime;
-        gPlayers[i].y += gPlayers[i].momentumY * app->deltaTime;
-    }
+	player->pos.x += player->momentumX * player->app->deltaTime;
+	player->pos.y += player->momentumY * player->app->deltaTime;
+	//Apply friction
+	player->momentumX *= 0.98f;
+	player->momentumY *= 0.98f;
 }
-//Friction processing
-void playerFrictions(App* app)
-{
-    //Friction
-    for (int i = 0; i < 2; i++)
-    {
-        gPlayers[i].momentumX *= 0.98f;
-        gPlayers[i].momentumY *= 0.98f;
-    }
-}
-//Checks if player is Out Of Bounds and moves him to the other side if yes
-void playerOOB(App* app)
-{
-    ImGuiIO* io = igGetIO();
-    //Out of borders
-    for (int i = 0; i < 2; i++)
-    {
-        if (gPlayers[i].lives != 0)
-        {
-            if (gPlayers[i].x > io->DisplaySize.x / 50 + 1)
-                gPlayers[i].x = -0.5;
-            if (gPlayers[i].x < -1)
-                gPlayers[i].x = io->DisplaySize.x / 50 + 0.5;
 
-            if (gPlayers[i].y < -io->DisplaySize.y / 50 - 2 )
-                gPlayers[i].y = 0.5;
-            if (gPlayers[i].y > 1)
-                gPlayers[i].y = -io->DisplaySize.y / 50 - 0.5;
-        }
-        
-    }
+//Checks if player is Out Of Bounds and moves him to the other side if yes
+void playerOOB(Player *player)
+{
+	ImGuiIO* io = igGetIO();
+	if (player->lives != 0)
+	{
+		if (player->pos.x > io->DisplaySize.x / 50 + 1)
+			player->pos.x = -0.5;
+		if (player->pos.x < -1)
+			player->pos.x = io->DisplaySize.x / 50 + 0.5;
+
+		if (player->pos.y < -io->DisplaySize.y / 50 - 2 )
+			player->pos.y = 0.5;
+		if (player->pos.y > 1)
+			player->pos.y = -io->DisplaySize.y / 50 - 0.5;
+	}
 }
 //Displays debug informations
-void playerDebug(App* app)
+void playerDebug(Player *player)
 {
-    igText("DeltaTime: %f", app->deltaTime);
-    for (int i = 0; i < 2; i++)
-    {
-        
-        igText("Player %d", i + 1);
-        igText("   X: %f", gPlayers[i].x);
-        igText("   Y: %f", gPlayers[i].y);
-        igText("   Momentum X: %f", gPlayers[i].momentumX);
-        igText("   Momentum Y: %f", gPlayers[i].momentumY);
-        igText("   Speed: %f", sqrt(pow(gPlayers[i].momentumX, 2.0f) + pow(gPlayers[i].momentumY, 2.0f)));
-        igText("   Angle: %f", gPlayers[i].angle);
-        igText("   Inv.Time : %f", gPlayers[i].invincibility);
-        igText("----------");
-    }
+	igText("Player %p", player);
+	igText("   X: %f", player->pos.x);
+	igText("   Y: %f", player->pos.y);
+	igText("   Momentum X: %f", player->momentumX);
+	igText("   Momentum Y: %f", player->momentumY);
+	igText("   Speed: %f", sqrtf(powf(player->momentumX, 2.0f) + powf(player->momentumY, 2.0f)));
+	igText("   Angle: %f", player->angle);
+	igText("   Inv.Time : %f", player->invincibility);
+	igText("----------");
 }
 //Unites all of the above functions
-void playerScript(App* app)
+void playerScript(Player *player)
 {
-    drawPlayer(app);
-    playerControls(app);
-    playerFrictions(app);
-    playerMovement(app);
-    bulletUpdate(app);
-    playerOOB(app);
-    playerInvincibility(app);
-    playerGameOver(app);
-    bulletDebug();
-    playerDebug(app);
+	drawPlayer(player);
+	playerControls(player);
+	playerMovement(player);
+	playerOOB(player);
+	playerInvincibility(player);
+	playerGameOver(player);
+	bulletDebug();
+	playerDebug(player);
 }

@@ -26,7 +26,6 @@ void appInit(App* app)
     app->graphics.textures.forcefield = cvLoadTexture("assets/forcefield.png");     //Loads forcefield texture
     app->graphics.show_static = false;
     app->sceneMainMenu.show_controls = false;
-    /*playerInit(app);*/
 }
 
 //Handles the choosing of the chosen scene.

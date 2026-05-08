@@ -7,9 +7,8 @@
 #include "../game/tinkering.h"
 #include "../game/game.h"
 #include "../game/player/player.h"
-#include "../game/entities/bullet.h"
+#include "../game/bullet.h"
 
-extern Player gPlayers [MAX_AMOUNT_OF_PLAYERS]; //TODO: remove plz
 extern Bullet gBullets [MAX_BULLET_COUNT];
 
 
@@ -60,38 +59,38 @@ void mineInit()
     }
 }
 
-void spawnFireball(int index)
+void spawnFireball(int index, Player *player)
 {
     if (fmine[index].type == 1 || fmine[index].type == 3)
-        {
-            for (int i = 0; i < MINE_MAX; i++)
-            {
-                if (fmine[i].isActive == false)
-                {
-                    float tempX;
-                    float tempY;
-                    float normalizer;
-                    fmine[i].angle = fmine[index].angle;
-                    fmine[i].size = 1;
-                    fmine[i].type = 4;
-                    fmine[i].x = fmine[index].x;
-                    fmine[i].y = fmine[index].y;
-                    tempX = gPlayers[0].x - fmine[i].x;
-                    tempY = gPlayers[0].y - fmine[i].y;
-                    normalizer = sqrtf(powf(tempX, 2.0f) + powf(tempY, 2.0f));
-                    fmine[i].momentumX = tempX / normalizer;
-                    fmine[i].momentumY = tempY / normalizer;
-                    fmine[i].isActive = true;
-                    break;
-                }
-            }
-        }
+	{
+		for (int i = 0; i < MINE_MAX; i++)
+		{
+			if (fmine[i].isActive == false)
+			{
+				float tempX;
+				float tempY;
+				float normalizer;
+				fmine[i].angle = fmine[index].angle;
+				fmine[i].size = 1;
+				fmine[i].type = 4;
+				fmine[i].x = fmine[index].x;
+				fmine[i].y = fmine[index].y;
+				tempX = player->pos.x - fmine[i].x;
+				tempY = player->pos.y - fmine[i].y;
+				normalizer = sqrtf(powf(tempX, 2.0f) + powf(tempY, 2.0f));
+				fmine[i].momentumX = tempX / normalizer;
+				fmine[i].momentumY = tempY / normalizer;
+				fmine[i].isActive = true;
+				break;
+			}
+		}
+	}
 }
 
-void killMineFloating(int index)
+void killMineFloating(int index, Player *player)
 {
     //si la mine est petite ou si c'est une boule de feu, la détruire
-    spawnFireball(index);
+    spawnFireball(index, player);
     if (fmine[index].size == 1)
     {
         fmine[index].isActive = false;
@@ -179,113 +178,104 @@ void checkMinesIntegrity()
         
 }
 
-void mineMovement(int i, App* app)
+void mineMovement(int i, App* app, Player *player)
 {
-    switch (fmine[i].type)
-    {
-        case 0 ... 1: //Floating Mine && Fireball Mine
-            fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size) * 3; //Make it move.
-            fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 3;
-            break;
-        
-        case 2 ... 3: //Magnetic Mine, Magnetic-Fireball Mine
+	switch (fmine[i].type)
+	{
+		case 0 ... 1: //Floating Mine && Fireball Mine
+			fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size) * 3; //Make it move.
+			fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 3;
+			break;
+		
+		case 2 ... 3: //Magnetic Mine, Magnetic-Fireball Mine
 {
-            float tempX;
-            float tempY;
-            float normalizer;
-            tempX = gPlayers[0].x - fmine[i].x;
-            tempY = gPlayers[0].y - fmine[i].y;
-            normalizer = sqrtf(powf(tempX, 2.0f) + powf(tempY, 2.0f));
-            fmine[i].momentumX = tempX / normalizer;
-            fmine[i].momentumY = tempY / normalizer;
-            // fmine[i].momentumY *= 0.97;
-            // fmine[i].momentumX *= 0.97;
-            fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size) * 0.98; //Make it move.
-            fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 0.98;
+			float tempX;
+			float tempY;
+			float normalizer;
+			tempX = player->pos.x - fmine[i].x;
+			tempY = player->pos.y - fmine[i].y;
+			normalizer = sqrtf(powf(tempX, 2.0f) + powf(tempY, 2.0f));
+			fmine[i].momentumX = tempX / normalizer;
+			fmine[i].momentumY = tempY / normalizer;
+			// fmine[i].momentumY *= 0.97;
+			// fmine[i].momentumX *= 0.97;
+			fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size) * 0.98; //Make it move.
+			fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size) * 0.98;
 }
-            break;
+			break;
 
-        case 4: //Fireball
-            fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size); //Make it move.
-            fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size);
-            break;
+		case 4: //Fireball
+			fmine[i].x += fmine[i].momentumX * app -> deltaTime * (4 - fmine[i].size); //Make it move.
+			fmine[i].y += fmine[i].momentumY * app -> deltaTime * (4 - fmine[i].size);
+			break;
 
-        default:
-            break;
-    }
+		default:
+			break;
+	}
 }
 
-void mineCollision(int i, App* app)
+void mineCollision(int i, App* app, Player *player)
 {
-    float2 mineBox[4] = 
-    {
-        { fmine[i].x + (0.3f * fmine[i].size), fmine[i].y + (0.3f * fmine[i].size) },
-        { fmine[i].x + (0.3f * fmine[i].size), fmine[i].y + (-0.3f * fmine[i].size) },
-        { fmine[i].x + (-0.3f * fmine[i].size), fmine[i].y + (-0.3f * fmine[i].size) },
-        { fmine[i].x + (-0.3f * fmine[i].size), fmine[i].y + (0.3f * fmine[i].size) }
-    };
-    for (int p = 0; p < 2; p++)
-    {
-        if (gPlayers[p].invincibility <= 0)
-        {
-            float2 collisionSquare[4] =
-            {
-                { -0.5f + gPlayers[p].x, 0.5f + gPlayers[p].y},
-                { 0.5f + gPlayers[p].x, 0.5f + gPlayers[p].y},
-                { 0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y},
-                { -0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y}
-            };
-            if (checkCollisionSquareSquare(mineBox, collisionSquare, app->graphics.show_collisionbox))
-            {
-                killPlayer(p, app);
-            }
-        }
-        
-    }
-
-
-    //BULLET COLLISION
-    for (int b = 0; b < MAX_BULLET_COUNT; b++)
-    {
-        if (gBullets[b].isActive == true)
-        {
-            int specialBonus;
-            switch (fmine[i].type)
-            {
-                case 0: specialBonus = 0; break;
-                case 1: specialBonus = 225; break;
-                case 2: specialBonus = 400; break;
-                case 3: specialBonus = 650; break;
-                case 4: specialBonus = 0; break;
-            }
-            float2 bulletSquare[4] =
-            {
-                { -0.2f + gBullets[b].pos.x, 0.2f + gBullets[b].pos.y},
-                { 0.2f + gBullets[b].pos.x, 0.2f + gBullets[b].pos.y},
-                { 0.2f + gBullets[b].pos.x, -0.2f + gBullets[b].pos.y},
-                { -0.2f + gBullets[b].pos.x, -0.2f + gBullets[b].pos.y}
-            };
-            if (checkCollisionSquareSquare(mineBox, bulletSquare, app))
-            {
-                ma_engine_play_sound(&app->engine, "assets/audio/mine-death.mp3", NULL);
-                gBullets[b].timeBeforeDeath = BULLET_LIFE_TIME;
-                gBullets[b].isActive = 0;                       //Killing the bullet.
-                switch(fmine[i].size)
-                {
-                    case 1: gPlayers[gBullets[b].ownerPlayer].score += 200;
-                    if (fmine[i].type == 4)
-                    {
-                        gPlayers[gBullets[b].ownerPlayer].score -= 90;
-                    }
-                    break;
-                    case 2: gPlayers[gBullets[b].ownerPlayer].score += 135; break;
-                    case 3: gPlayers[gBullets[b].ownerPlayer].score += 100; break;
-                }
-                gPlayers[gBullets[b].ownerPlayer].score += specialBonus;
-                killMineFloating(i);
-            }   
-        }
-    }
+	float2 mineBox[4] = 
+	{
+		{ fmine[i].x + (0.3f * fmine[i].size), fmine[i].y + (0.3f * fmine[i].size) },
+		{ fmine[i].x + (0.3f * fmine[i].size), fmine[i].y + (-0.3f * fmine[i].size) },
+		{ fmine[i].x + (-0.3f * fmine[i].size), fmine[i].y + (-0.3f * fmine[i].size) },
+		{ fmine[i].x + (-0.3f * fmine[i].size), fmine[i].y + (0.3f * fmine[i].size) }
+	};
+	if (player->invincibility <= 0)
+	{
+		float2 collisionSquare[4] =
+		{
+			{ -0.5f + player->pos.x, 0.5f + player->pos.y},
+			{ 0.5f + player->pos.x, 0.5f + player->pos.y},
+			{ 0.5f + player->pos.x, -0.5f + player->pos.y},
+			{ -0.5f + player->pos.x, -0.5f + player->pos.y}
+		};
+		if (checkCollisionSquareSquare(mineBox, collisionSquare, app->graphics.show_collisionbox))
+			killPlayer(player);
+	}
+	
+	//BULLET COLLISION
+	for (int b = 0; b < MAX_BULLET_COUNT; b++)
+	{
+		if (gBullets[b].isActive == true)
+		{
+			int specialBonus;
+			switch (fmine[i].type)
+			{
+				case 0: specialBonus = 0; break;
+				case 1: specialBonus = 225; break;
+				case 2: specialBonus = 400; break;
+				case 3: specialBonus = 650; break;
+				case 4: specialBonus = 0; break;
+			}
+			float2 bulletSquare[4] =
+			{
+				{ -0.2f + gBullets[b].pos.x, 0.2f + gBullets[b].pos.y},
+				{ 0.2f + gBullets[b].pos.x, 0.2f + gBullets[b].pos.y},
+				{ 0.2f + gBullets[b].pos.x, -0.2f + gBullets[b].pos.y},
+				{ -0.2f + gBullets[b].pos.x, -0.2f + gBullets[b].pos.y}
+			};
+			if (checkCollisionSquareSquare(mineBox, bulletSquare, app))
+			{
+				//ma_engine_play_sound(&app->engine, "assets/audio/mine-death.mp3", NULL);
+				gBullets[b].timeBeforeDeath = BULLET_LIFE_TIME;
+				gBullets[b].isActive = 0;                       //Killing the bullet.
+				switch(fmine[i].size)
+				{
+					case 1: gBullets[b].ownerPlayer->score += 200;
+					if (fmine[i].type == 4)
+						gBullets[b].ownerPlayer->score -= 90;
+					break;
+					case 2: gBullets[b].ownerPlayer->score += 135; break;
+					case 3: gBullets[b].ownerPlayer->score += 100; break;
+				}
+				gBullets[b].ownerPlayer->score += specialBonus;
+				killMineFloating(i, player);
+			}   
+		}
+	}
 }
 
 void mineOOB(int i)
@@ -303,16 +293,16 @@ void mineOOB(int i)
         fmine[i].y = -io->DisplaySize.y / 50 - 0.5;
 }
 
-void entityMineUpdate(App* app)
+void entityMineUpdate(App* app, Player *player)
 {
     for (int i = 0; i < MINE_MAX; i++)
     {
         if (fmine[i].isActive == true)
         {
             drawMineFloating(fmine[i]);
-            mineMovement(i, app);
+            mineMovement(i, app, player);
             mineOOB(i);
-            mineCollision(i, app);
+            mineCollision(i, app, player);
         }
     }
     checkMinesIntegrity();

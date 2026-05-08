@@ -1,27 +1,45 @@
 #pragma once
 #ifndef		PLAYER_H
 # define	PLAYER_H
-# include	"../../app.h"
-# include "../tinkering.h"
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#include <cimgui.h>
+#include <toolbox.h>
+# include	"../tinkering.h"
+
+typedef struct App App;
+
+struct playerControls
+{
+	ImGuiKey_ rotateRight;
+	ImGuiKey_ rotateLeft;
+	ImGuiKey_ rotateRightAlt;
+	ImGuiKey_ rotateLeftAlt;
+	ImGuiKey_ teleport;
+	ImGuiKey_ teleportAlt;
+	ImGuiKey_ forward;
+	ImGuiKey_ forwardAlt;
+	ImGuiKey_ fire;
+};
 
 
 typedef struct Player
 {
-    float x;
-    float y;
-    float angle;
-    float momentumX;
-    float momentumY;
-    int score;
-    int lives;
-    float invincibility;
+	float2			pos;
+	float			angle;
+	float			momentumX;
+	float			momentumY;
+	int				score;
+	int				lives;
+	float			invincibility;
+	unsigned int	color;
+	App				*app;
+	struct playerControls	controls;
 } Player;
 
-extern Player gPlayers [MAX_AMOUNT_OF_PLAYERS];
+extern const float2 shapePlayer[6];
 
-void playerInit(App* app);
-void playerScript(App* app);
+void	playerInit(App* app, Player* player, bool playerNumber);
+void	playerScript(Player* app);
+void	killPlayer(Player *player);
 
-
-void killPlayer(int index, App* app);
 #endif

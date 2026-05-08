@@ -6,12 +6,8 @@
 #include "audio.h"
 #include "game/game.h"
 #include <miniaudio.h>
-
-typedef struct float2
-{
-    float x;
-    float y;
-} float2;
+#include <toolbox.h>
+#include "game/player/player.h"
 
 typedef struct textures
 {
@@ -41,6 +37,8 @@ typedef struct App
 {
     struct graphics graphics;
     struct sceneMainMenu sceneMainMenu;
+
+	Player player[2];
 
     bool paused;
 

@@ -3,6 +3,7 @@
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 #include <cimgui.h>
 #include <canvas.h>
+#include <assert.h>
 
 //Handles the Main Menu Display
 void displayMainMenu(App* app)
@@ -31,7 +32,8 @@ void processingMainMenu(App* app)
         app->twoPlayers = false;
         app->scene = 1;
         printf("app->scene = 1\n");
-        playerInit(app);
+        playerInit(app, &app->player[0], 0);
+        playerInit(app, &app->player[1], 1);
     }
 
     //Lance une partie deux joueurs
@@ -40,7 +42,8 @@ void processingMainMenu(App* app)
         app->twoPlayers = true;
         app->scene = 1;
         printf("app->scene = 1\n");
-        playerInit(app);
+        playerInit(app, &app->player[0], 0);
+        playerInit(app, &app->player[1], 1);
     }
 
     //Quitte le jeu

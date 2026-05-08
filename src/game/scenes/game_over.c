@@ -25,7 +25,8 @@ void displayGameOver(App* app)
     drawHUDScore(app);
     if (igIsKeyPressed(ImGuiKey_Escape, 0))
     {
-        playerInit(app);
+        playerInit(app, &app->player[0], 0);
+        playerInit(app, &app->player[1], 1);
         app->paused = false;
         app->twoPlayers = false;
         app->scene = 0;

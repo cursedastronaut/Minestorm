@@ -4,7 +4,6 @@
 #include <cimgui.h>
 #include <math.h>
 #include <toolbox.h>
-#include "../geo/geo.h"
 #include "../game/tinkering.h"
 #include "../game/game.h"
 #include "../game/player/player.h"
@@ -236,7 +235,7 @@ void mineCollision(int i, App* app)
                 { 0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y},
                 { -0.5f + gPlayers[p].x, -0.5f + gPlayers[p].y}
             };
-            if (checkCollisionSquareSquare(mineBox, collisionSquare, app))
+            if (checkCollisionSquareSquare(mineBox, collisionSquare, app->graphics.show_collisionbox))
             {
                 killPlayer(p, app);
             }

@@ -1,6 +1,5 @@
 #include "player.h"
 #include "../entities/bullet.h"
-#include "../../geo/geo.h"
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>

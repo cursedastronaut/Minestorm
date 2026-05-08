@@ -20,4 +20,8 @@ typedef struct float2
 	float y;
 } float2;
 
+float2 newFloat2(float x, float y);
+float2 rotatePoint(float2 p, float2 c, float angle);
+bool	checkCollisionSquareSquare(float2 square1[4], float2 square2[4], bool shouldDrawCollision);
+
 #endif

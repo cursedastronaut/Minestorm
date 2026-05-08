@@ -213,7 +213,7 @@ static void mineMovement(Mine *mine, App* app, Player *player)
 	mineOOB(mine);
 }
 
-void mineCollision(Mine *mine, App* app, Player *player)
+void mineCollision(Mine *mine, App* app, Player **player)
 {
 	float2 mineBox[4] = 
 	{
@@ -222,29 +222,32 @@ void mineCollision(Mine *mine, App* app, Player *player)
 		{ mine->pos.x + (-0.3f * mine->size), mine->pos.y + (-0.3f * mine->size) },
 		{ mine->pos.x + (-0.3f * mine->size), mine->pos.y + (0.3f * mine->size) }
 	};
-	if (player->invincibility <= 0)
+	for (uint8_t i = 0; i < 2; ++i)
 	{
-		float2 collisionSquare[4] =
+		if (player[i]->invincibility <= 0)
 		{
-			{ -0.5f + player->pos.x, 0.5f + player->pos.y},
-			{ 0.5f + player->pos.x, 0.5f + player->pos.y},
-			{ 0.5f + player->pos.x, -0.5f + player->pos.y},
-			{ -0.5f + player->pos.x, -0.5f + player->pos.y}
-		};
-		if (checkCollisionSquareSquare(mineBox, collisionSquare, app->graphics.show_collisionbox))
-			killPlayer(player);
+			float2 collisionSquare[4] =
+			{
+				{ -0.5f + player[i]->pos.x, 0.5f + player[i]->pos.y},
+				{ 0.5f + player[i]->pos.x, 0.5f + player[i]->pos.y},
+				{ 0.5f + player[i]->pos.x, -0.5f + player[i]->pos.y},
+				{ -0.5f + player[i]->pos.x, -0.5f + player[i]->pos.y}
+			};
+			if (checkCollisionSquareSquare(mineBox, collisionSquare, app->graphics.show_collisionbox))
+				killPlayer(player[i]);
+		}
 	}
 	
 	//BULLET COLLISION
 	for (int b = 0; b < MAX_BULLET_COUNT; ++b)
-		bulletMineCollision(&player->app->bullets[b], mine, player->app, mineBox);
+		bulletMineCollision(&player[0]->app->bullets[b], mine, player[0]->app, mineBox);
 }
 
-bool	mineUpdate(Mine *mine, App *app, Player *player)
+bool	mineUpdate(Mine *mine, App *app, Player **player)
 {
 	if (!mine->isActive)
 		return false;
-	mineMovement(mine, app, player);
+	mineMovement(mine, app, player[0]);
 	mineCollision(mine, app, player);
 	#ifdef _DEBUG
 	if (igIsKeyPressed(ImGuiKey_M, 0))

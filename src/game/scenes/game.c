@@ -53,14 +53,14 @@ void displayGame(App* app)
 {
 	if (!app->gameinit)
 		return;
-    drawHUDScore(&app->player[0], false);
-    drawHUDLivesLeft(&app->player[0], false);
+	drawHUDScore(&app->player[0], false);
+	drawHUDLivesLeft(&app->player[0], false);
 	if (app->twoPlayers)
 	{
 		drawHUDLivesLeft(&app->player[1], true);
 		drawHUDScore(&app->player[1], true);
 	}
-    drawHUDLevel(app);
+	drawHUDLevel(app);
 	for (uint16_t i = 0; i < MINE_MAX; ++i)
 		drawMine(&app->mines[i]);
 }
@@ -69,22 +69,25 @@ void processingGame(App* app)
 {
 	if (!app->gameinit)
 		return;
-    if (!app->paused)
-    {
-		bool	nextLevelReached = false;
-        playerScript(&app->player[0]);
-		for (uint16_t i = 0; i < MINE_MAX && !nextLevelReached; ++i)
-			nextLevelReached = mineUpdate(&app->mines[i], app, &app->player[0]);
-		#ifdef _DEBUG
-        if (igIsKeyPressed(ImGuiKey_C, 0))
-            app->graphics.show_collisionbox = !app->graphics.show_collisionbox;
-		#endif
-    }
-    pauseGame(app);
 	Player *players[2];
 	players[0] = &app->player[0];
 	players[1] = &app->player[1];
 
 	Player **ptr = players;
+	if (!app->paused)
+	{
+		bool	nextLevelReached = false;
+		playerScript(&app->player[0]);
+		if (app->twoPlayers)
+			playerScript(&app->player[1]);
+		for (uint16_t i = 0; i < MINE_MAX && !nextLevelReached; ++i)
+			nextLevelReached = mineUpdate(&app->mines[i], app, ptr);
+		#ifdef _DEBUG
+		if (igIsKeyPressed(ImGuiKey_C, 0))
+			app->graphics.show_collisionbox = !app->graphics.show_collisionbox;
+		#endif
+	}
+	pauseGame(app);
+
 	bulletUpdate(app, ptr, 2);
 }

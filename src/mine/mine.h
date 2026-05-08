@@ -39,7 +39,7 @@ typedef struct Mine
 void entityType();
 void mineInit(Mine *mine);
 //Returns "true" on all mines dead.
-bool	mineUpdate(Mine *mine, App *app, Player *player);
+bool	mineUpdate(Mine *mine, App *app, Player **player);
 void	drawMine(Mine *currentMine);
 
 void killMineFloating(Mine *mine, Player *player);

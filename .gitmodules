@@ -1,0 +1,6 @@
+[submodule "third-party/miniaudio"]
+	path = third-party/miniaudio
+	url = https://github.com/mackron/miniaudio.git
+[submodule "third-party/libcanvas"]
+	path = third-party/libcanvas
+	url = git@github.com:cursedastronaut/libcanvas.git

@@ -15,61 +15,133 @@ else
 	LIBEXT := .a
 endif
 
-# Paths
-LIBS_PATH := libs/
+# ------------------------------------------------------------------
+# Directories
+# ------------------------------------------------------------------
 OBJDIR := objects
-MINIAUDIO_DIR := libs/miniaudio
-MINIAUDIO_SRC := $(MINIAUDIO_DIR)/miniaudio.c
-#MINIAUDIO_OBJ := $(OBJDIR)/libs/miniaudio/miniaudio.o
-MINIAUDIO_LIB := $(LIBS_PATH)libminiaudio$(LIBEXT)
 
+# ------------------------------------------------------------------
+# Submodules
+# ------------------------------------------------------------------
+LIBCANVAS_DIR := third-party/libcanvas
+MINIAUDIO_DIR := third-party/miniaudio
+
+LIBCANVAS_LIB := $(LIBCANVAS_DIR)/libcanvas$(LIBEXT)
+
+MINIAUDIO_SRC := $(MINIAUDIO_DIR)/miniaudio.c
+MINIAUDIO_OBJ := $(OBJDIR)/third-party/miniaudio/miniaudio.o
+MINIAUDIO_LIB := $(MINIAUDIO_DIR)/libminiaudio$(LIBEXT)
+
+# ------------------------------------------------------------------
 # Tools
+# ------------------------------------------------------------------
 CC := gcc
 AR := ar rcs
+MAKE := make
+GIT := git
 
+# ------------------------------------------------------------------
 # Flags
+# ------------------------------------------------------------------
 CFLAGS := -Ofast -g3 -D_DEBUG
-CPPFLAGS := -Iinclude/ -Iinclude/libs/ -Iinclude/
+
+CPPFLAGS := \
+	-Iinclude/ \
+	-I$(LIBCANVAS_DIR)/include/ \
+	-I$(MINIAUDIO_DIR)/ \
+	-I$(LIBCANVAS_DIR)/third_party/cimgui/ \
+	-I$(LIBCANVAS_DIR)/third_party/cimgui/imgui/ \
+	-I$(LIBCANVAS_DIR)/third_party/cimgui/imgui/backends/
+
 DEPFLAGS := -MMD -MP
 
-LDFLAGS := -L$(LIBS_PATH)x86_64-linux-gnu -L$(LIBS_PATH)
-LDLIBS := -lglfw3 -lcanvas -lminiaudio -lstdc++ -ldl -lpthread -lm
+LDFLAGS :=
 
+LDLIBS := \
+	-lcanvas \
+	-lminiaudio \
+	-lglfw3 \
+	-lstdc++ \
+	-ldl \
+	-lpthread \
+	-lm	\
+	-L$(LIBCANVAS_DIR) \
+	-L$(MINIAUDIO_DIR) \
+	-Llibs/x86_64-pc-linux-gnu  \
+	-Llibs/x86_64-w64-mingw32 \
+	-Llibs/x86_64-pc-cygwin \
+	-Llibs/x86_64-linux-gnu
+
+# ------------------------------------------------------------------
 # Sources
+# ------------------------------------------------------------------
 CSRC := $(wildcard src/*.c) \
         $(wildcard src/**/*.c) \
         $(wildcard src/**/**/*.c) \
         $(wildcard src/**/**/**/*.c)
 
-# Object + dependency mapping
+# ------------------------------------------------------------------
+# Objects + dependencies
+# ------------------------------------------------------------------
 OBJS := $(patsubst %.c,$(OBJDIR)/%.o,$(CSRC))
 DEPS := $(OBJS:.o=.d)
-#MINIAUDIO_DEP := $(MINIAUDIO_OBJ:.o=.d)
+MINIAUDIO_DEP := $(MINIAUDIO_OBJ:.o=.d)
 
-.PHONY: all clean fclean re
+# ------------------------------------------------------------------
+# Phony targets
+# ------------------------------------------------------------------
+.PHONY: all clean fclean re submodules
 
-all: $(PROGRAM)$(EXEEXT)
+# ------------------------------------------------------------------
+# Default target
+# ------------------------------------------------------------------
+all: submodules $(PROGRAM)$(EXEEXT)
 
+# ------------------------------------------------------------------
 # Include dependency files
--include $(DEPS)
+# ------------------------------------------------------------------
+-include $(DEPS) $(MINIAUDIO_DEP)
 
-# Build executable
-$(PROGRAM)$(EXEEXT): $(MINIAUDIO_LIB) $(OBJS)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $@
+# ------------------------------------------------------------------
+# Submodule initialization
+# ------------------------------------------------------------------
+submodules:
+	@echo "Checking submodules..."
+	@if [ ! -f "$(LIBCANVAS_DIR)/Makefile" ] || [ ! -f "$(MINIAUDIO_DIR)/miniaudio.h" ]; then \
+		echo "Initializing missing submodules..."; \
+		$(GIT) submodule update --init --recursive; \
+	fi
 
+# ------------------------------------------------------------------
+# Final executable
+# ------------------------------------------------------------------
+$(PROGRAM)$(EXEEXT): $(LIBCANVAS_LIB) $(MINIAUDIO_LIB) $(OBJS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(OBJS) $(LDFLAGS) $(LDLIBS) -o $@
+
+# ------------------------------------------------------------------
+# Build libcanvas
+# ------------------------------------------------------------------
+$(LIBCANVAS_LIB): submodules
+	$(MAKE) -C $(LIBCANVAS_DIR)
+
+# ------------------------------------------------------------------
 # Build miniaudio static library
-$(MINIAUDIO_LIB):
-	@$(call MKDIR_P,$(LIBS_PATH))
-	@$(call MKDIR_P,$(OBJDIR)/libs/miniaudio/)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(MINIAUDIO_SRC) -o $(OBJDIR)/libs/miniaudio/miniaudio.o
-	$(AR) $@ $(OBJDIR)/libs/miniaudio/miniaudio.o
+# ------------------------------------------------------------------
+$(MINIAUDIO_LIB): $(MINIAUDIO_SRC) $(MINIAUDIO_DIR)/miniaudio.h
+	@$(call MKDIR_P,$(dir $(MINIAUDIO_OBJ)))
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEPFLAGS) -c $(MINIAUDIO_SRC) -o $(MINIAUDIO_OBJ)
+	$(AR) $@ $(MINIAUDIO_OBJ)
 
+# ------------------------------------------------------------------
 # Generic source compilation
+# ------------------------------------------------------------------
 $(OBJDIR)/%.o: %.c
 	@$(call MKDIR_P,$(dir $@))
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEPFLAGS) -c $< -o $@
 
-# Clean objects only
+# ------------------------------------------------------------------
+# Clean objects
+# ------------------------------------------------------------------
 clean:
 ifeq ($(OS),Windows_NT)
 	-$(RMDIR) $(OBJDIR)
@@ -77,13 +149,18 @@ else
 	$(RMDIR) $(OBJDIR)
 endif
 
+# ------------------------------------------------------------------
 # Full clean
+# ------------------------------------------------------------------
 fclean: clean
+	$(MAKE) -C $(LIBCANVAS_DIR) clean
 ifeq ($(OS),Windows_NT)
 	-$(RM) $(PROGRAM)$(EXEEXT) config.bin $(MINIAUDIO_LIB)
 else
 	$(RM) $(PROGRAM)$(EXEEXT) config.bin $(MINIAUDIO_LIB)
 endif
 
+# ------------------------------------------------------------------
 # Rebuild
+# ------------------------------------------------------------------
 re: fclean all

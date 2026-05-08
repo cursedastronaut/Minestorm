@@ -7,8 +7,6 @@
 #include <toolbox.h>
 #include "../../app.h"
 
-Bullet gBullets [MAX_BULLET_COUNT];
-
 //Initializes the player's position
 void playerInit(App* app, Player* player, bool playerNumber)
 {
@@ -19,13 +17,6 @@ void playerInit(App* app, Player* player, bool playerNumber)
 	player->pos = (float2){.x =12, 5.f - 7.f};
 	if (playerNumber == 1)
 		player->pos = (float2){.x = 7.5f, .y = -7.f};
-
-	//TODO: move to bulletsInit
-	for (int i = 0; i < MAX_BULLET_COUNT; i++) //Loops through the bullets
-	{
-		gBullets[i].isActive = 0; //Deactivating the bullets (just in case)
-		gBullets[i].timeBeforeDeath = BULLET_LIFE_TIME; //See tinkering.h
-	}
 	player->score = 0; //Initial score
 	player->lives = 3;
 	player->momentumX = 0;
@@ -88,57 +79,6 @@ void playerTeleport(Player	*player)
 	player->invincibility = 2.0f;
 	player->pos.x = rand() % ((int) io->DisplaySize.x / 50);
 	player->pos.y = -rand() % ((int) io->DisplaySize.y / 50);
-}
-
-//Fires a bullet
-void	fireBullet(Player *player)
-{
-	float	oldestBullet = BULLET_LIFE_TIME;
-	int		oldestBulletIndex = -1;
-	for (int i = 0; i < MAX_BULLET_COUNT; ++i)
-	{
-		if (gBullets[i].isActive == false)
-		{
-			gBullets[i].isActive = true;		//Bullet is now active.
-			gBullets[i].angle = player->angle;  //Bullet's angle is set to Player's angle
-			gBullets[i].pos.x = rotatePoint( (float2){0.f,0.8f},
-				(float2){0.f, 0.f}, player->angle).x + player->pos.x;          //Bullet's X position is set to Player's X position
-			gBullets[i].pos.y = rotatePoint( (float2){0.f,0.8f},
-				(float2){0.f, 0.f}, player->angle).y + player->pos.y;          //Bullet's Y position is set to Player's Y position
-			gBullets[i].opacity = 255;              //Bullet's opacity is set to max.
-			gBullets[i].ownerPlayer = player;                 //Bullet's owner is the player who fired it.
-			gBullets[i].momentum.x = (sin(-player->angle) * 0.27f);
-			gBullets[i].momentum.y = (cos(-player->angle) * 0.27f);
-		}
-		if (gBullets[i].timeBeforeDeath < oldestBullet)
-		{
-			oldestBullet = gBullets[i].timeBeforeDeath;
-			oldestBulletIndex = i;
-		}
-	}
-
-	if (oldestBulletIndex != -1)
-	{
-		gBullets[oldestBulletIndex].pos.x = player->pos.x;
-		gBullets[oldestBulletIndex].pos.y = player->pos.y;
-		gBullets[oldestBulletIndex].timeBeforeDeath = 3.f;
-		gBullets[oldestBulletIndex].angle = player->angle;
-	}
-}
-
-//TODO: move to bullet.c
-
-void bulletDebug()
-{
-	int bulletCount = 0;
-	for (int i = 0; i < MAX_BULLET_COUNT; i++)
-	{
-		if (gBullets[i].isActive == true)
-		{
-			bulletCount ++;
-		}
-	}
-	igText("Drawn Bullets: %d | Max: %d", bulletCount, MAX_BULLET_COUNT);
 }
 
 void killPlayer(Player *player)
@@ -244,7 +184,7 @@ void playerControls(Player *player)
 		playerTeleport(player);
 	if (igIsKeyPressed(player->controls.fire, 0))
 	{
-		fireBullet(player);
+		bulletCreate(player);
 		ma_engine_play_sound(&player->app->engine, "assets/audio/shooting.mp3", NULL);
 	}
 	if (player->angle > 2.0f * PI)
@@ -302,6 +242,5 @@ void playerScript(Player *player)
 	playerOOB(player);
 	playerInvincibility(player);
 	playerGameOver(player);
-	bulletDebug();
 	playerDebug(player);
 }

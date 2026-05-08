@@ -22,7 +22,9 @@ void displayGameOver(App* app)
         break;
     }
     
-    drawHUDScore(app);
+    drawHUDScore(&app->player[0], false);
+	if (app->twoPlayers)
+	    drawHUDScore(&app->player[1], true);
     if (igIsKeyPressed(ImGuiKey_Escape, 0))
     {
         playerInit(app, &app->player[0], 0);

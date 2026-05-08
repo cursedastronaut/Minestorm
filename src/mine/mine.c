@@ -9,9 +9,6 @@
 #include "../game/player/player.h"
 #include "../game/bullet.h"
 
-extern Bullet gBullets [MAX_BULLET_COUNT];
-
-
 struct Mine fmine [MINE_MAX];   //Choosing the amount of mines (see tinkering.h)
 int chanceMineFloating = 100;
 int chanceMineFireball = 0;
@@ -59,9 +56,9 @@ void mineInit()
     }
 }
 
-void spawnFireball(int index, Player *player)
+void spawnFireball(Mine *mine, Player *player)
 {
-    if (fmine[index].type == 1 || fmine[index].type == 3)
+    if (mine->type == 1 || mine->type == 3)
 	{
 		for (int i = 0; i < MINE_MAX; i++)
 		{
@@ -70,11 +67,11 @@ void spawnFireball(int index, Player *player)
 				float tempX;
 				float tempY;
 				float normalizer;
-				fmine[i].angle = fmine[index].angle;
+				fmine[i].angle = mine->angle;
 				fmine[i].size = 1;
 				fmine[i].type = 4;
-				fmine[i].x = fmine[index].x;
-				fmine[i].y = fmine[index].y;
+				fmine[i].x = mine->x;
+				fmine[i].y = mine->y;
 				tempX = player->pos.x - fmine[i].x;
 				tempY = player->pos.y - fmine[i].y;
 				normalizer = sqrtf(powf(tempX, 2.0f) + powf(tempY, 2.0f));
@@ -87,27 +84,27 @@ void spawnFireball(int index, Player *player)
 	}
 }
 
-void killMineFloating(int index, Player *player)
+void killMineFloating(Mine *mine, Player *player)
 {
     //si la mine est petite ou si c'est une boule de feu, la détruire
-    spawnFireball(index, player);
-    if (fmine[index].size == 1)
+    spawnFireball(mine, player);
+    if (mine->size == 1)
     {
-        fmine[index].isActive = false;
+        mine->isActive = false;
     }
     //sinon, reduit la taille de la mine et en fait apparaitre une autre
     else
     {
-        fmine[index].size --;
+        mine->size --;
         for (int i = 0; i < MINE_MAX; i++)
         {
             if (fmine[i].isActive == false)
             {
-                fmine[i].angle = fmine[index].angle;
-                fmine[i].size = fmine[index].size;
-                fmine[i].type = fmine[index].type;
-                fmine[i].x = fmine[index].x - 0.3;
-                fmine[i].y = fmine[index].y - 0.3;
+                fmine[i].angle = mine->angle;
+                fmine[i].size = mine->size;
+                fmine[i].type = mine->type;
+                fmine[i].x = mine->x - 0.3;
+                fmine[i].y = mine->y - 0.3;
                 fmine[i].momentumX = cosf(fmine[i].angle) * 0.1;                //Sets the momentum variables so that it goes
                 fmine[i].momentumY = sinf(fmine[i].angle) * 0.1;                //in the direction of its angle.
                 fmine[i].isActive = true;
@@ -116,9 +113,9 @@ void killMineFloating(int index, Player *player)
         }
         // si la mine est de type fireball ou magnetic-fireball, faire apparaitre une fireball
     }
-    fmine[index].angle += PI;
-    fmine[index].momentumX = cosf(fmine[index].angle) * 0.1;
-    fmine[index].momentumY = sinf(fmine[index].angle) * 0.1;
+    mine->angle += PI;
+    mine->momentumX = cosf(mine->angle) * 0.1;
+    mine->momentumY = sinf(mine->angle) * 0.1;
 }
 
 void drawMineFloating(Mine currentMine)
@@ -237,45 +234,8 @@ void mineCollision(int i, App* app, Player *player)
 	}
 	
 	//BULLET COLLISION
-	for (int b = 0; b < MAX_BULLET_COUNT; b++)
-	{
-		if (gBullets[b].isActive == true)
-		{
-			int specialBonus;
-			switch (fmine[i].type)
-			{
-				case 0: specialBonus = 0; break;
-				case 1: specialBonus = 225; break;
-				case 2: specialBonus = 400; break;
-				case 3: specialBonus = 650; break;
-				case 4: specialBonus = 0; break;
-			}
-			float2 bulletSquare[4] =
-			{
-				{ -0.2f + gBullets[b].pos.x, 0.2f + gBullets[b].pos.y},
-				{ 0.2f + gBullets[b].pos.x, 0.2f + gBullets[b].pos.y},
-				{ 0.2f + gBullets[b].pos.x, -0.2f + gBullets[b].pos.y},
-				{ -0.2f + gBullets[b].pos.x, -0.2f + gBullets[b].pos.y}
-			};
-			if (checkCollisionSquareSquare(mineBox, bulletSquare, app))
-			{
-				//ma_engine_play_sound(&app->engine, "assets/audio/mine-death.mp3", NULL);
-				gBullets[b].timeBeforeDeath = BULLET_LIFE_TIME;
-				gBullets[b].isActive = 0;                       //Killing the bullet.
-				switch(fmine[i].size)
-				{
-					case 1: gBullets[b].ownerPlayer->score += 200;
-					if (fmine[i].type == 4)
-						gBullets[b].ownerPlayer->score -= 90;
-					break;
-					case 2: gBullets[b].ownerPlayer->score += 135; break;
-					case 3: gBullets[b].ownerPlayer->score += 100; break;
-				}
-				gBullets[b].ownerPlayer->score += specialBonus;
-				killMineFloating(i, player);
-			}   
-		}
-	}
+	for (int b = 0; b < MAX_BULLET_COUNT; ++b)
+		bulletMineCollision(&player->app->bullets[b], &fmine[i], player->app, mineBox);
 }
 
 void mineOOB(int i)

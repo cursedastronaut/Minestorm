@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <canvas.h>
 #include "audio.h"
+#include "game/bullet.h"
 #include "game/game.h"
 #include <miniaudio.h>
 #include <toolbox.h>
@@ -39,6 +40,7 @@ typedef struct App
     struct sceneMainMenu sceneMainMenu;
 
 	Player player[2];
+	Bullet bullets[MAX_BULLET_COUNT];
 
     bool paused;
 

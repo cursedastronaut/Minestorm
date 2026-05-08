@@ -96,7 +96,8 @@ bool	checkCollisionSquareSquare(float2 square1[4], float2 square2[4], bool shoul
 {
 	bool collided = processSquareSquareCollision(square1, square2);
 
-	drawSquareCollision(square1, square2, shouldDrawCollision, collided);
+	if (!shouldDrawCollision)
+		drawSquareCollision(square1, square2, shouldDrawCollision, collided);
 
 	return collided;
 }

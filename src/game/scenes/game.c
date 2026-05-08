@@ -13,6 +13,8 @@ void gameInit(App* app)
 	if (app->gameinit == false)
 	{
 		mineInit();
+		for (int i = 0; i < MAX_BULLET_COUNT; i++)
+			bulletInit(&app->bullets[i]);
 		playerInit(app, &app->player[0], 0);
 		playerInit(app, &app->player[1], 1);
 		app->gameinit = true;
@@ -21,29 +23,27 @@ void gameInit(App* app)
 
 void pauseGame(App* app)
 {
-    if (igIsKeyPressed(ImGuiKey_Space, 0))
-        app->paused = !app->paused;
+	if (igIsKeyPressed(ImGuiKey_Space, 0))
+		app->paused = !app->paused;
 
-    if (app->paused == true)
-    {
-        ImGuiIO* io = igGetIO();
-        cvAddText(io->DisplaySize.x/50 / 2 - 0.5, -(io->DisplaySize.y / 50 / 2) + 0.5, CV_COL32_WHITE, "PAUSE");
+	if (app->paused == true)
+	{
+		ImGuiIO* io = igGetIO();
+		cvAddText(io->DisplaySize.x/50 / 2 - 0.5, -(io->DisplaySize.y / 50 / 2) + 0.5, CV_COL32_WHITE, "PAUSE");
 
-        if (igIsKeyPressed(ImGuiKey_Escape, 0))
-        {
-            playerInit(app, &app->player[0], 0);
-            playerInit(app, &app->player[1], 1);
-            app->paused = false;
-            app->twoPlayers = false;
-            app->scene = 0;
-            chanceMineFloating = 100;
-            chanceMineFireball = 0;
-            chanceMineMagnetic = -20;
-            chanceMineFiremag  = -40;
-            level = 0;
-            app->gameinit = false;
-        }
-    }
+		if (igIsKeyPressed(ImGuiKey_Escape, 0))
+		{
+			app->gameinit = false;
+			app->paused = false;
+			app->twoPlayers = false;
+			app->scene = 0;
+			chanceMineFloating = 100;
+			chanceMineFireball = 0;
+			chanceMineMagnetic = -20;
+			chanceMineFiremag  = -40;
+			level = 0;
+		}
+	}
 }
 
 

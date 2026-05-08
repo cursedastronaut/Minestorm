@@ -1,4 +1,6 @@
 #pragma once
+#ifndef MINE_H
+#define MINE_H
 #include <toolbox.h>
 #include <stdbool.h>
 #include "../app.h"
@@ -29,3 +31,6 @@ typedef struct Mine
 void entityMineUpdate(App* app, Player *player);
 void entityType();
 void mineInit();
+void killMineFloating(Mine *mine, Player *player);
+
+#endif

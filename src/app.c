@@ -35,20 +35,20 @@ void sceneDisplay(App* app)
     switch (app->scene)
     {
     //Scene 0 = Main Menu
-    case 0:
+    case SCENE_MAINMENU:
         displayMainMenu(app);
         processingMainMenu(app);
         break;
 
     //Scene 1 = Game
-    case 1:
+    case SCENE_GAME:
         gameInit(app);
         displayGame(app);
         processingGame(app);
         break;
     
     //Game Over
-    case 3:
+    case SCENE_GAMEOVER:
         displayGameOver(app);
         break;
 

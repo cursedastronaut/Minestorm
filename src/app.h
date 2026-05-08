@@ -7,6 +7,7 @@
 #include "mine/mine.h"
 #include "game/bullet.h"
 #include "game/game.h"
+#include "game/scenes/scenes.h"
 #include <miniaudio.h>
 #include <toolbox.h>
 
@@ -45,7 +46,7 @@ typedef struct App
 
     bool paused;
 
-    int scene;
+    enum sceneNames scene;
     bool shutdown;
     bool twoPlayers;
 

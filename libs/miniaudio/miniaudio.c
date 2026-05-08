@@ -1,4 +1,4 @@
-#include "audio.h"
+#include <miniaudio.h>
 #define MINIAUDIO_IMPLEMENTATION
  
 // Fix cygwin gcc compiler

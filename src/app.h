@@ -3,7 +3,6 @@
 #define APP_H
 #include <stdbool.h>
 #include <canvas.h>
-#include "audio.h"
 #include "game/player/player.h"
 #include "mine/mine.h"
 #include "game/bullet.h"

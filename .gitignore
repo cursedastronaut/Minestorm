@@ -1,14 +1,22 @@
+#Editors
 .vscode
-.vscode/settings.json
-.vscode/
-app.exe
-app
+
+# Executables remains
+*.exe
+*.stackdump
 Minestorm
 Minestorm.exe
-libs.old/
-*.o
-app.exe.stackdump
+minestorm
+
+# Objects
+objects
+**.d
+**.o
+
+# Runtime files
 save1.sav
 save2.sav
 *.bin
-minestorm
+
+# Auto-generated libraries
+libs/libminiaudio.a
